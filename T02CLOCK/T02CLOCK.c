@@ -14,7 +14,10 @@
 
 
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
-{
+{         
+
+
+  LOGFONT font;
   char str[18];
   INT i=0;
   DOUBLE x, y;
@@ -94,10 +97,26 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
       str[15] = '0' + (INT)Time.wMinute/10;
       str[16] = '0' + (INT)Time.wMinute%10;
       str[17] = 0;
+
+      
+     font.lfHeight =  12 ;// Устанавливает высоту шрифта или символа
+     font.lfWidth =  0;// Устанавливает среднюю ширину символов в шрифте
+     font.lfEscapement = 0;// Устанавливает угол, между вектором наклона и осью X устройства
+     font.lfOrientation = 0;// Устанавливает угол, между основной линией каждого символа и осью X устройства
+     font.lfWeight = 100;// Устанавливает толщину шрифта в диапазоне от 0 до 1000
+     font.lfItalic = 0;// Устанавливает курсивный шрифт
+     font.lfUnderline = 0;// Устанавливает подчеркнутый шрифт
+     font.lfStrikeOut = 0;// Устанавливает зачеркнутый шрифт
+     font.lfCharSet = RUSSIAN_CHARSET;// Устанавливает набор символов
+     font.lfOutPrecision = 0;// Устанавливает точность вывода
+     font.lfClipPrecision = 0;// Устанавливает точность отсечения
+     font.lfQuality = 0;// Устанавливает качество вывода
+     font.lfPitchAndFamily = 0;// Устанавливает ширину символов и семейство шрифта
+    strcpy(font.lfFaceName , "VERDANA");//  устанавливает название шрифта
+ 
+
       TextOut(hMemDC,20,h-20,str,strlen(str));
     }
-    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
-    SetDCBrushColor(hMemDC, RGB(255, 255, 255));
     InvalidateRect(hWnd, NULL, FALSE);
     return 0;
 
@@ -113,10 +132,11 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
     hBm = CreateCompatibleBitmap(hDC, w, h);
     ReleaseDC(hWnd, hDC);
     SelectObject(hMemDC, hBm);
+    DeleteObject(hBm);
     SendMessage(hWnd, WM_TIMER, 0, 0);
     return 0;
 
-  case WM_PAINT:
+  case WM_PAINT:                                            
     hDC = BeginPaint(hWnd, &ps);
     BitBlt(hDC, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
     EndPaint(hWnd, &ps);

@@ -84,13 +84,9 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
     {
       for(i=0; i<10; i++)
       {
-        x=rand() % w;
-        y=rand() % h;
-        DrawEyes
-             
-          
-           
-          (hWnd,hMemDC, x, y, 100,200, 30, pt);
+        x=rand() % (w+1);
+        y=rand() % (h+1);
+        DrawEyes(hWnd,hMemDC, x, y, 100, 30, pt);
       }
     }
  
@@ -163,14 +159,14 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
                       NULL,
                       hInstance,
                       NULL);
-   CreateWindow("Button","ON/OFF",
+        CreateWindow("Button","ON/OFF",
                       WS_CHILDWINDOW | WS_VISIBLE,
                       CW_USEDEFAULT,CW_USEDEFAULT,
                       60,30,
                       hWnd,
                       NULL,
                       hInstance,
-                      NULL);
+                      NULL);  
   ShowWindow(hWnd, SW_SHOWNORMAL);
   
   UpdateWindow(hWnd);
