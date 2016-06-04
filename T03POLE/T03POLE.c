@@ -19,14 +19,28 @@ VOID arrow( HWND hWnd, HDC hDC, INT x, INT y, POINT pt, INT r )
   DOUBLE len, sina, cosa; 
   HPEN hPen, hOldPen;
   HBRUSH hBr,hOldBr;
-  POINT pte[101];/*red part of the arrow*/
-  POINT pt2e[101];/*blue part of the arrow*/
-  POINT ptc[101];
+  POINT *pte;/*red part of the arrow*/
+  POINT *pt2e;/*blue part of the arrow*/
+  POINT *ptc;
+  
+  if ((ptc = malloc(sizeof(POINT)*(r*2+1))) == NULL)
+    return;
+  if ((pte = malloc(sizeof(POINT)*(r*2+1))) == NULL)
+  {
+    free(ptc);    
+    return;
+  }
+  if ((pt2e = malloc(sizeof(POINT)*(r*2+1))) == NULL)
+  {
+    free(ptc);    
+    free(pte);    
+    return;
+  }
   len = sqrt((pt.x - x) * (pt.x - x) + (pt.y - y) * (pt.y - y));
   cosa = (pt.x - x) / len;
   sina = (pt.y - y) / len;
  
-  for(i=0; i<=100; i++)
+  for(i=0; i<(r*2+1); i++)
   {
     ptc[i].x =sqrt(-(i-r)*(i-r) + r*r);
     ptc[i].y =i-r;
@@ -35,33 +49,37 @@ VOID arrow( HWND hWnd, HDC hDC, INT x, INT y, POINT pt, INT r )
  
   hPen = CreatePen(PS_SOLID, 1,RGB(0, 0, 0));
   hOldPen = SelectObject(hDC, hPen);
-  hBr = CreateSolidBrush(RGB(255, 0, 0));
+  hBr = CreateSolidBrush(RGB(0, 170, 0));
   hOldBr = SelectObject(hDC, hBr);
-  for(i=0; i<=100; i++)
+  for(i=0; i<(r*2+1); i++)
   {
     pte[i].x = x + ptc[i].x*cosa - ptc[i].y*sina;
     pte[i].y = y + ptc[i].x*sina + ptc[i].y*cosa;
   } 
-  Polygon(hDC,pte,101);
+  Polygon(hDC,pte,r*2+1);
   DeleteObject(hBr);
   DeleteObject(hPen);
 
   hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
   SelectObject(hDC, hPen);
-  hBr = CreateSolidBrush(RGB(0, 0, 255));
+  hBr = CreateSolidBrush(RGB(0, 0, 170));
   SelectObject(hDC, hBr);
 
-  for(i=0; i<101; i++)
+  for(i=0; i<(r*2+1); i++)
   {
     pt2e[i].x = x - ptc[i].x*cosa - (ptc[i].y)*sina;
     pt2e[i].y = y - ptc[i].x*sina + (ptc[i].y)*cosa;
   } 
-  Polygon(hDC,pt2e,101);
+  Polygon(hDC,pt2e,r*2+1);
   DeleteObject(hBr);
   DeleteObject(hPen);
 
   SelectObject(hDC, hOldBr);
   SelectObject(hDC, hOldPen);
+  
+    free(ptc);    
+    free(pte);
+    free(pt2e);
 } /* End of function "arrow" */
 
 /* Begin of function "MyWindowFunc" */
@@ -71,7 +89,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
 
   LOGFONT font;
   char str[18];
-  INT i=0;
+  INT i=0, j=0;
   DOUBLE x, y;
   HPEN hPen;
   SYSTEMTIME Time;
@@ -102,14 +120,16 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
     GetCursorPos(&pt);
     ScreenToClient(hWnd, &pt);
     srand(50);
-    if(flag)
-    for(i=0; i<10; i++)
+    //if(flag)
+    /*for(i=0; i<10; i++)
     {
       x=rand() % (w+1);
       y=rand() % (h+1); 
       arrow(hWnd,hMemDC, x, y, pt, 50);
-    }
-    
+    }   */
+    for(i=50; i<w; i += 50)
+      for(j=50; j<h; j += 50)
+        arrow(hWnd,hMemDC, i, j, pt, 25);
     InvalidateRect(hWnd, NULL, FALSE);
     return 0;
 

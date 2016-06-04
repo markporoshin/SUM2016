@@ -127,8 +127,8 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
         x=rand() % (w+1);
         y=rand() % (h+1); 
         speed  =rand() % (h+1);
-        StretchBlt(hMemDC, sin(clock()/100000.0*speed)*300.0+x, y, bm.bmWidth, bm.bmHeight, hMemANDPac, 0, 0,bm.bmWidth,bm.bmHeight,SRCAND);
-        StretchBlt(hMemDC, sin(clock()/100000.0*speed)*300.0+x, y, bm.bmWidth, bm.bmHeight, hMemXORPac, 0, 0,bm.bmWidth,bm.bmHeight,SRCINVERT);
+        StretchBlt(hMemDC, sin(clock()/100000.0*speed)*300.0+x, cos(clock()/100000.0*speed)*300.0+y, bm.bmWidth, bm.bmHeight, hMemANDPac, 0, 0,bm.bmWidth,bm.bmHeight,SRCAND);
+        StretchBlt(hMemDC, sin(clock()/100000.0*speed)*300.0+x, cos(clock()/100000.0*speed)*300.0+y, bm.bmWidth, bm.bmHeight, hMemXORPac, 0, 0,bm.bmWidth,bm.bmHeight,SRCINVERT);
       }
         
       hPen = CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
