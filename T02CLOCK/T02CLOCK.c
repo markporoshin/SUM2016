@@ -4,46 +4,111 @@
  * PURPOSE:-
  */
 #include <math.h>
+#include <time.h>
 #include <windows.h>
 #define WND_CLASS_NAME "My window class"
 #define MP2_PI 3.14159265358979323846 
 
 
 
+/* Set/reset full screen mode function */
+VOID FlipFullScreen( HWND hWnd )
+{
+  static BOOL IsFullScreen = FALSE;
+  static RECT SaveRect;
 
+  if (IsFullScreen)
+  {
+    /* restore window size */
+    SetWindowPos(hWnd, HWND_TOP,
+      SaveRect.left, SaveRect.top,
+      SaveRect.right - SaveRect.left, SaveRect.bottom - SaveRect.top,
+      SWP_NOOWNERZORDER);
+  }
+  else
+  {
+    /* Set full screen size to window */
+    HMONITOR hmon;
+    MONITORINFOEX moninfo;
+    RECT rc;
+
+    /* Store window old size */
+    GetWindowRect(hWnd, &SaveRect);
+
+    /* Get nearest monitor */
+    hmon = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+
+    /* Obtain monitor info */
+    moninfo.cbSize = sizeof(moninfo);
+    GetMonitorInfo(hmon, (MONITORINFO *)&moninfo);
+
+    /* Set window new size */
+    rc = moninfo.rcMonitor;
+    AdjustWindowRect(&rc, GetWindowLong(hWnd, GWL_STYLE), FALSE);
+
+    SetWindowPos(hWnd, HWND_TOPMOST,
+      rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top,
+      SWP_NOOWNERZORDER);
+  }
+  IsFullScreen = !IsFullScreen;
+} /* End of 'FlipFullScreen' function */
 
 
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
 {         
-
-
+  MINMAXINFO *MinMax;
   LOGFONT font;
   char str[18];
   INT i=0;
-  DOUBLE x, y;
+  DOUBLE x, y, speed;
   HPEN hPen;
   SYSTEMTIME Time;
-  static BITMAP bm;
-  static HBITMAP hBmLogo, hBm;
-  static HDC hMemDCLogo, hMemDC;
+  static BITMAP bm, bmPac;
+  static HBITMAP hBmLogo, hBm, hBmANDPac, hBmXORPac;
+  static HDC hMemDCLogo, hMemDC, hMemANDPac, hMemXORPac;
   static INT h=500, w=700, flag=1;
   HDC hDC;
   POINT pt;
   PAINTSTRUCT ps;
   switch(Msg)
   {
+  case WM_GETMINMAXINFO:
+    MinMax = (MINMAXINFO *)lParam;
+    MinMax -> ptMaxTrackSize.y =
+      GetSystemMetrics(SM_CYMAXTRACK) +
+      GetSystemMetrics(SM_CYCAPTION) +
+      GetSystemMetrics(SM_CYMENU) +
+      GetSystemMetrics(SM_CYBORDER) * 2;
+
   case WM_CREATE:
-    SetTimer(hWnd,0,10,NULL);
+    SetTimer(hWnd, 0, 10, NULL);
     hDC = GetDC(hWnd);
-    hBmLogo = LoadImage(NULL,"CLOCK.bmp",IMAGE_BITMAP,0,0,LR_LOADFROMFILE);
-    GetObject(hBmLogo,sizeof(bm),&bm);
+    hBmLogo = LoadImage(NULL, "CLOCK.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    GetObject(hBmLogo, sizeof(bm), &bm);
     hMemDC = CreateCompatibleDC(hDC);
     hMemDCLogo = CreateCompatibleDC(hDC);
+
+    hBmANDPac = LoadImage(NULL, "ANDPAC.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hBmXORPac = LoadImage(NULL, "XORPAC.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    GetObject(hBmXORPac, sizeof(bmPac), &bmPac);
+
+    hMemANDPac = CreateCompatibleDC(hDC);
+    hMemXORPac = CreateCompatibleDC(hDC);
+    SelectObject(hMemANDPac,hBmANDPac);
+    SelectObject(hMemXORPac,hBmXORPac); 
+    
     SelectObject(hMemDCLogo,hBmLogo);
     ReleaseDC(hWnd, hDC);
     return 0;
 
   case WM_ERASEBKGND:
+    return 0;
+
+  case WM_KEYDOWN:
+    if(LOWORD(wParam) == 'F')
+      FlipFullScreen(hWnd);
+    if(LOWORD(wParam) == VK_ESCAPE)
+      DestroyWindow(hWnd);
     return 0;
 
   case WM_TIMER: 
@@ -56,7 +121,16 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
     if(flag)
     {
       StretchBlt(hMemDC, w/2-h/2, 0, h, h, hMemDCLogo, 0, 0,bm.bmWidth,bm.bmHeight,SRCCOPY);
-
+      srand(30);
+      for(i=0; i<10; i++)
+      {
+        x=rand() % (w+1);
+        y=rand() % (h+1); 
+        speed  =rand() % (h+1);
+        StretchBlt(hMemDC, sin(clock()/100000.0*speed)*300.0+x, y, bm.bmWidth, bm.bmHeight, hMemANDPac, 0, 0,bm.bmWidth,bm.bmHeight,SRCAND);
+        StretchBlt(hMemDC, sin(clock()/100000.0*speed)*300.0+x, y, bm.bmWidth, bm.bmHeight, hMemXORPac, 0, 0,bm.bmWidth,bm.bmHeight,SRCINVERT);
+      }
+        
       hPen = CreatePen(PS_SOLID, 3, RGB(0, 255, 0));
       SelectObject(hMemDC, hPen);
       MoveToEx(hMemDC,w/2,h/2,NULL); 
@@ -69,7 +143,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
       LineTo(hMemDC, sin(Time.wMinute * 6.0 / 180.0 * MP2_PI)*(h/4) + w/2, -cos((Time.wMinute) * 6.0 / 180.0 * MP2_PI)*(h/4) + h/2); 
       DeleteObject(hPen);
 
-      hPen = CreatePen(PS_SOLID, 10, RGB(0, 0, 255));
+      hPen = CreatePen(PS_SOLID, 10, RGB(100, 200, 200));
       SelectObject(hMemDC, hPen);
       MoveToEx(hMemDC,w/2,h/2,NULL); 
       LineTo(hMemDC, sin((Time.wHour % 12) * 30.0 / 180.0 * MP2_PI)*(h/10) + w/2, -cos((Time.wHour % 12) * 30.0 / 180.0 * MP2_PI)*(h/10) + h/2); 
@@ -148,7 +222,11 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
 
   case WM_DESTROY:
     DeleteDC(hMemDCLogo);
+    DeleteDC(hMemANDPac);
+    DeleteDC(hMemXORPac);
     DeleteObject(hBm);
+    DeleteObject(hBmANDPac);
+    DeleteObject(hBmXORPac);
     DeleteDC(hMemDC);
     KillTimer(hWnd, 0);
     PostQuitMessage(0);

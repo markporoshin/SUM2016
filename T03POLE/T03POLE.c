@@ -19,14 +19,14 @@ VOID arrow( HWND hWnd, HDC hDC, INT x, INT y, POINT pt, INT r )
   DOUBLE len, sina, cosa; 
   HPEN hPen, hOldPen;
   HBRUSH hBr,hOldBr;
-  POINT pte[100], ptb[3] = {{r, 0}, {0, r*0.5}, {0, -r * 0.5}};/*red part of the arrow*/
-  POINT pt2e[100], pt2b[4] = {{0, r*0.25},{-r, r*0.25}, {-r, -r*0.25}, {0, -r * 0.25}};/*blue part of the arrow*/
-  POINT ptc[100];
+  POINT pte[101];/*red part of the arrow*/
+  POINT pt2e[101];/*blue part of the arrow*/
+  POINT ptc[101];
   len = sqrt((pt.x - x) * (pt.x - x) + (pt.y - y) * (pt.y - y));
   cosa = (pt.x - x) / len;
   sina = (pt.y - y) / len;
  
-  for(i=0; i<100; i++)
+  for(i=0; i<=100; i++)
   {
     ptc[i].x =sqrt(-(i-r)*(i-r) + r*r);
     ptc[i].y =i-r;
@@ -37,12 +37,12 @@ VOID arrow( HWND hWnd, HDC hDC, INT x, INT y, POINT pt, INT r )
   hOldPen = SelectObject(hDC, hPen);
   hBr = CreateSolidBrush(RGB(255, 0, 0));
   hOldBr = SelectObject(hDC, hBr);
-  for(i=0; i<100; i++)
+  for(i=0; i<=100; i++)
   {
     pte[i].x = x + ptc[i].x*cosa - ptc[i].y*sina;
     pte[i].y = y + ptc[i].x*sina + ptc[i].y*cosa;
   } 
-  Polygon(hDC,pte,100);
+  Polygon(hDC,pte,101);
   DeleteObject(hBr);
   DeleteObject(hPen);
 
@@ -51,12 +51,12 @@ VOID arrow( HWND hWnd, HDC hDC, INT x, INT y, POINT pt, INT r )
   hBr = CreateSolidBrush(RGB(0, 0, 255));
   SelectObject(hDC, hBr);
 
-  for(i=0; i<100; i++)
+  for(i=0; i<101; i++)
   {
     pt2e[i].x = x - ptc[i].x*cosa - (ptc[i].y)*sina;
     pt2e[i].y = y - ptc[i].x*sina + (ptc[i].y)*cosa;
   } 
-  Polygon(hDC,pt2e,100);
+  Polygon(hDC,pt2e,101);
   DeleteObject(hBr);
   DeleteObject(hPen);
 
