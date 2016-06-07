@@ -6,8 +6,11 @@
 #include <math.h>
 #include <time.h>
 #include <windows.h>
+#include "resource.h"
+
 #define WND_CLASS_NAME "My window class"
 #define MP2_PI 3.14159265358979323846 
+
 
 
 
@@ -57,6 +60,7 @@ VOID FlipFullScreen( HWND hWnd )
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
 {         
   MINMAXINFO *MinMax;
+  CREATESTRUCT *cs;
   LOGFONT font;
   char str[18];
   INT i=0;
@@ -79,17 +83,18 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
       GetSystemMetrics(SM_CYCAPTION) +
       GetSystemMetrics(SM_CYMENU) +
       GetSystemMetrics(SM_CYBORDER) * 2;
-
+      return 0;
   case WM_CREATE:
+    cs = (CHAR *)lParam;
     SetTimer(hWnd, 0, 10, NULL);
     hDC = GetDC(hWnd);
-    hBmLogo = LoadImage(NULL, "CLOCK.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hBmLogo = LoadImage(cs->hInstance, IDB_BITMAP3, IMAGE_BITMAP, 0, 0, 0);
     GetObject(hBmLogo, sizeof(bm), &bm);
     hMemDC = CreateCompatibleDC(hDC);
     hMemDCLogo = CreateCompatibleDC(hDC);
 
-    hBmANDPac = LoadImage(NULL, "ANDPAC.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-    hBmXORPac = LoadImage(NULL, "XORPAC.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+    hBmANDPac = LoadImage(cs->hInstance, IDB_BITMAP2, IMAGE_BITMAP, 0, 0, 0);
+    hBmXORPac = LoadImage(cs->hInstance, IDB_BITMAP1, IMAGE_BITMAP, 0, 0, 0);
     GetObject(hBmXORPac, sizeof(bmPac), &bmPac);
 
     hMemANDPac = CreateCompatibleDC(hDC);
@@ -99,6 +104,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
     
     SelectObject(hMemDCLogo,hBmLogo);
     ReleaseDC(hWnd, hDC);
+    FlipFullScreen(hWnd);
     return 0;
 
   case WM_ERASEBKGND:
