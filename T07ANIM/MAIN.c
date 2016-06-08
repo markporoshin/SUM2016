@@ -1,32 +1,20 @@
 /*Poroshin Mark 10-2 07.08.2015*/
-/* FILE NAME: T06SPHR.c
+/* FILE NAME: MAIN.c
  * PROGRAMMER: MP2
- * PURPOSE:-                   */
-
-#include <math.h>
+ * PURPOSE:function WinMAIN    */
 #include <windows.h>
-#include "SPHERE.h"
+#include "VEC.H"
 
 #define WND_CLASS_NAME "My window class"
-#define MP2_PI 3.14159265358979323846
-
-
 
 /* Begin of function "MyWindowFunc" */
 LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
 {         
-  LOGFONT font;
-  char str[18];
-  INT i=0, j=0;
-  DOUBLE x, y;
-  HPEN hPen, hOldPen;
-  SYSTEMTIME Time;
   static BITMAP bm;
   static HBITMAP hBm;
   static HDC hMemDC;
-  static INT h=500, w=700, flag=1;
+  static INT h, w, flag=1;
   HDC hDC;
-  POINT pt;
   PAINTSTRUCT ps;
   switch(Msg)
   {
@@ -41,14 +29,11 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
     return 0;
 
   case WM_TIMER: 
-    SelectObject(hMemDC, GetStockObject(DC_PEN));
-    SelectObject(hMemDC, GetStockObject(DC_BRUSH));
-    SetDCPenColor(hMemDC, RGB(100,150,200));
-    SetDCBrushColor(hMemDC, RGB(100,150,200));
-    Rectangle(hMemDC, 0, 0, w+1, h+1);
-    /* draw sphere */
-    LoadSphere();
-    sphere( hMemDC, w/2, h/2 );
+    /*SelectObject(hDC, GetStockObject(DC_PEN));
+    SelectObject(hDC, GetStockObject(DC_BRUSH));
+    SetDCPenColor(hDC, RGB(100,150,0));
+    SetDCBrushColor(hDC, RGB(100,150,0));
+    Rectangle(hMemDC, 0, 0, w+1, h+1);*/
     
     InvalidateRect(hWnd, NULL, FALSE);
     return 0;
@@ -93,7 +78,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine, INT ShowCmd )
 {
   WNDCLASS wc;
-  HWND hWnd;
+  //HWND hWnd;
   MSG msg;
 
   wc.style = CS_VREDRAW | CS_HREDRAW;
@@ -113,7 +98,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
     return 0;
   }
 
-  hWnd = CreateWindow(WND_CLASS_NAME,"EYES",
+  /*hWnd = CreateWindow(WND_CLASS_NAME,"EYES",
                       WS_OVERLAPPEDWINDOW,
                       CW_USEDEFAULT,CW_USEDEFAULT,
                       CW_USEDEFAULT,CW_USEDEFAULT,
@@ -129,15 +114,15 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
                       NULL,
                       hInstance,
                       NULL);
-  ShowWindow(hWnd, SW_SHOWNORMAL);
+  ShowWindow(hWnd, SW_SHOWNORMAL); 
   
-  UpdateWindow(hWnd);
+  UpdateWindow(hWnd);  */
   while (GetMessage(&msg, NULL, 0, 0))
   {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }
   return 0;
-} /*End of Main function*/
+} /* End of Main function */
 
-/*End of T02CLOCK.c*/
+/* End of file "MAIN.c" */

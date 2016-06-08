@@ -2,5 +2,6 @@
 #define __SPHERE_H_
 
 VOID sphere( HDC hDC, INT xc, INT yc );
+VOID LoadSphere( VOID );
 
 #endif
