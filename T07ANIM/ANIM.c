@@ -63,6 +63,7 @@ VOID MP2_AnimClose( VOID )
 VOID MP2_AnimRender( VOID )
 {
   INT i;
+  srand(1);
   /*. . . опросили все (kbd, mouse, joystick)*/   SelectObject(MP2_Anim.hDC, GetStockObject(DC_PEN));
   SelectObject(MP2_Anim.hDC, GetStockObject(DC_BRUSH));
   SetDCPenColor(MP2_Anim.hDC, RGB(100,150,200));

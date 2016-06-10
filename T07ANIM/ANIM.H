@@ -4,7 +4,7 @@
  * PURPOSE: main header of project    */
 
 #include "def.H"
-#define MP2_MAX_UNITS 10
+#define MP2_MAX_UNITS 100
 typedef struct tagmp2UNIT mp2UNIT;
 typedef struct
 {
@@ -73,3 +73,4 @@ VOID MP2_AnimRender( VOID );
 
 mp2UNIT * MP2_AnimUnitCreate( INT Size );
 mp2UNIT * MP2_UnitCreateBall( DBL x, DBL y, DBL z );
+VOID LoadSphere( VOID );

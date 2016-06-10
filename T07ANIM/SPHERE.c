@@ -1,12 +1,15 @@
 #include "ANIM.H"
 #include <time.h>
-#define  M 30
-#define  N 30
+#define  M 100
+#define  N 50
+#define RAND_MAX 180
+
 
 typedef struct
 {
   mp2UNIT;
   VEC Pos;
+
 }mp2SPHERE;
 
 typedef struct
@@ -20,9 +23,29 @@ IMG Globe;
 
 VOID sphere( HDC hDC, INT xc, INT yc );
 
+/* Random number obtain in range [0.0 .. 1.0] function.
+ * ARGUMENTS: None.
+ * RETURNS:
+ *   (DBL) result random number.
+ */
+__inline DBL Rnd0( VOID )
+{
+  return (DBL)rand() / RAND_MAX;
+} /* End of 'Rnd0' function */
+
+/* Random number obtain in range [-1.0 .. 1.0] function.
+ * ARGUMENTS: None.
+ * RETURNS:
+ *   (DBL) result random number.
+ */
+__inline DBL Rnd1( VOID )
+{
+  return 2.0 * rand() / RAND_MAX - 1;
+} /* End of 'Rnd1' function */
+
 static VOID MP2_UnitInit( mp2SPHERE *Uni, mp2ANIM *Ani )
 {
-  
+   
 } /* End of 'MP2_UnitInit' function */
 
 static VOID MP2_UnitRender( mp2SPHERE *Uni, mp2ANIM *Ani )
@@ -118,9 +141,9 @@ VOID sphere( HDC hDC, INT xc, INT yc )
   INT img_x, img_y;
   COLORREF c;
   BYTE r,g,b;
+  DBL ra1 = Rnd0(), ra2 = Rnd0(), ra3 = Rnd0(), ra4 = Rnd0();
   
-  LoadSphere();
-
+  
   GetLocalTime(&Time);
   for (i = 0; i < N; i++)
   {
@@ -132,7 +155,8 @@ VOID sphere( HDC hDC, INT xc, INT yc )
       V[i][j].X = r1 * sin(theta) * cos(phi);
       V[i][j].Y = r1 * sin(theta) * sin(phi);
       V[i][j].Z = r1 * cos(theta);
-      V[i][j] = PointTransform4(V[i][j] , MatrRotate(30, VecSet(1, 1, 1) ) );
+      
+      V[i][j] = PointTransform4(V[i][j] , MatrRotate(ra4, VecSet(ra1, ra2, ra3) ) );
       Ps[i][j].x = xc + V[i][j].X;
       Ps[i][j].y = yc + V[i][j].Z;
       //SetPixelV(hDC, V[i][j].X + xc, V[i][j].Z + yc, RGB(b, g, r));
@@ -141,7 +165,7 @@ VOID sphere( HDC hDC, INT xc, INT yc )
 
   for (j = 0; j < M - 1; j++)
   { 
-    for (i = 1; i < N - 1; i++)
+    for (i = 0; i < N - 1; i++)
     { 
       img_x = j * (Globe.W - 1) / (M - 1);
       img_y = i * (Globe.H - 1) / (N - 1);
