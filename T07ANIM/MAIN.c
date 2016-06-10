@@ -65,6 +65,10 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   WNDCLASS wc;
   HWND hWnd;
   MSG msg;
+  INT i, j;
+  
+
+  SetDbgMemHooks();
 
   wc.style = CS_VREDRAW | CS_HREDRAW;
   wc.cbClsExtra = 0;
@@ -92,8 +96,11 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
                       hInstance,
                       NULL);
   ShowWindow(hWnd, SW_SHOWNORMAL);
-  
   UpdateWindow(hWnd);
+
+  for(i=0; i<3; i++)
+    for(j=0; j<3; j++)    
+       MP2_AnimAddUnit(MP2_UnitCreateBall(i * (MP2_Anim.W / 3.0), j * (MP2_Anim.H / 3.0), 0 ));
   while (GetMessage(&msg, NULL, 0, 0))
   {
     TranslateMessage(&msg);

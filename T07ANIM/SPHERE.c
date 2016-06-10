@@ -1,31 +1,14 @@
-/*Poroshin Mark 10-2 07.08.2015*/
-/* FILE NAME: SPHERE.c
- * PROGRAMMER: MP2
- * PURPOSE:-                   */
-
-
-
-#include <math.h>
+#include "ANIM.H"
 #include <time.h>
-#include <windows.h>
-#include "SPHERE.h"
-
-#define MP2_PI 3.14159265358979323846
-#define N 500
-#define M 1000
-typedef DOUBLE DBL;
-typedef FLOAT FLT;
+#define  M 30
+#define  N 30
 
 typedef struct
 {
-  DBL X, Y, Z;
-} VEC;
+  mp2UNIT;
+  VEC Pos;
+}mp2SPHERE;
 
-/***
- * Sphere handle functions
- ***/
-
-/* Image representation type */
 typedef struct
 {
   HBITMAP hBmGlobe;
@@ -35,10 +18,35 @@ typedef struct
 
 IMG Globe;
 
-/* Load sphere texture function.
- * ARGUMENTS: None.
- * RETURNS: None.
- */
+VOID sphere( HDC hDC, INT xc, INT yc );
+
+static VOID MP2_UnitInit( mp2SPHERE *Uni, mp2ANIM *Ani )
+{
+  
+} /* End of 'MP2_UnitInit' function */
+
+static VOID MP2_UnitRender( mp2SPHERE *Uni, mp2ANIM *Ani )
+{
+  //Ellipse(Ani->hDC, Uni->Pos.X, Uni->Pos.X, Uni->Pos.X + 100, Uni->Pos.X + 100);
+  sphere(Ani->hDC, Uni->Pos.X, Uni->Pos.Y); 
+}
+
+mp2UNIT * MP2_UnitCreateBall( DBL x, DBL y, DBL z )
+{
+  mp2SPHERE *Uni;
+
+  if ((Uni = (mp2SPHERE *)MP2_AnimUnitCreate( sizeof(mp2SPHERE) )) == NULL)
+    return NULL;
+  Uni->Pos = VecSet(x, y, z); 
+  /* Setup unit methods */
+  Uni->Init = (VOID *)MP2_UnitInit;
+  Uni->Render = (VOID *)MP2_UnitRender;
+  
+  return (mp2UNIT *)Uni;
+} /* End of 'SA2_UnitCreateBall' function */
+
+
+
 VOID LoadSphere( VOID )
 {
   HDC hDC = GetDC(NULL), hMemDC, hMemDC1;
@@ -80,86 +88,6 @@ VOID LoadSphere( VOID )
 
 
 
-     
-
-
-DBL VecDotVec( VEC A, VEC B )
-{
-  return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
-} /* End of 'VecDotVec' function */
-
-/* Vector set by components function.
- * ARGUMENTS:
- *   - vector components:
- *       DBL A, B, C;
- * RETURNS:
- *   (VEC) constructed vector.
- */
-VEC VecSet( DBL A, DBL B, DBL C )
-{
-  VEC r = {A, B, C};
-
-  return r;
-} /* End of 'VecSet' function */
-
-/* Vector normalization function.
- * ARGUMENTS:
- *   - vector to be normalize:
- *       VEC V;
- * RETURNS:
- *   (VEC) normalized vector value.
- */
-VEC VecNormalize( VEC V )
-{
-  DBL len = VecDotVec(V, V);
-
-  if (len != 1 && len != 0)
-    len = sqrt(len), V.X /= len, V.Y /= len, V.Z /= len;
-  return V;
-} /* End of 'VecNormalize' function */
-
-/* Rotate vector function.
- * ARGUMENTS:
- *   - vector to be rotated:
- *       VEC P;
- *   - vector rotated around:
- *       VEC A;
- *   - rotation angle in degree:
- *       DBL Angle;
- * RETURNS:
- *   (VEC) rotated vector value.
- */
-VEC Rotate( VEC P, VEC A, DBL Angle )
-{
-  DBL si, co;
-
-  A = VecNormalize(A);
-
-  Angle *= MP2_PI / 180;
-  si = sin(Angle);
-  co = cos(Angle);
-
-  return VecSet(P.X * (co + A.X * A.X * (1 - co)) +
-                P.Y * (A.Y * A.X * (1 - co) + A.Z * si) +
-                P.Z * (A.Z * A.X * (1 - co) - A.Y * si),
-                P.X * (A.X * A.Y * (1 - co) - A.Z * si) +
-                P.Y * (co + A.Y * A.Y * (1 - co)) + 
-                P.Z * (A.Z * A.Y * (1 - co) + A.X * si),
-                P.X * (A.X * A.Z * (1 - co) + A.Y * si) +
-                P.Y * (A.Y * A.Z * (1 - co) - A.X * si) + 
-                P.Z * (co + A.Z * A.Z * (1 - co)));
-} /* End of 'Rotate' function */
-
-/* Draw quadrilateral function.
- * ARGUMENTS:
- *   - drawing device context:
- *       HDC hDC;
- *   - corner points:
- *       POINT P0, P1, P2, P3;
- *   - color:
- *       DWORD Color;
- * RETURNS: None.
- */
 VOID DrawQuad( HDC hDC, POINT P0, POINT P1, POINT P2, POINT P3 )
 {
   INT s =
@@ -180,11 +108,10 @@ VOID DrawQuad( HDC hDC, POINT P0, POINT P1, POINT P2, POINT P3 )
     Polygon(hDC, pts, 4);
   }
 } /* End of 'DrawQuad' function */
-
 VOID sphere( HDC hDC, INT xc, INT yc )
 {
   DOUBLE phi, theta, x, y, z, phaze = clock() / 1000.0;
-  INT i, j, k, r1 = 500;
+  INT i, j, k, r1 = 100;
   SYSTEMTIME Time;
   static VEC V[N][M];
   static POINT Ps[N][M], p0, p1, p2, p3;
@@ -192,19 +119,20 @@ VOID sphere( HDC hDC, INT xc, INT yc )
   COLORREF c;
   BYTE r,g,b;
   
+  LoadSphere();
 
   GetLocalTime(&Time);
   for (i = 0; i < N; i++)
   {
-    theta = i * MP2_PI / (N - 1);
+    theta = i * PI / (N - 1);
     for (j = 0; j < M; j++)
     { 
 
-      phi = j * 2.0 * MP2_PI / (M - 1) + phaze;
+      phi = j * 2.0 * PI / (M - 1) + phaze;
       V[i][j].X = r1 * sin(theta) * cos(phi);
       V[i][j].Y = r1 * sin(theta) * sin(phi);
       V[i][j].Z = r1 * cos(theta);
-      V[i][j] = Rotate(V[i][j], VecSet(1, 1, 1), 30);
+      V[i][j] = PointTransform4(V[i][j] , MatrRotate(30, VecSet(1, 1, 1) ) );
       Ps[i][j].x = xc + V[i][j].X;
       Ps[i][j].y = yc + V[i][j].Z;
       //SetPixelV(hDC, V[i][j].X + xc, V[i][j].Z + yc, RGB(b, g, r));
@@ -230,24 +158,7 @@ VOID sphere( HDC hDC, INT xc, INT yc )
       SelectObject(hDC, GetStockObject(DC_BRUSH));
       SetDCPenColor(hDC, c);
       SetDCBrushColor(hDC, c);
-      //DrawQuad(hDC, p0, p1, p2, p3);
-    }
-  } 
-  for (i = 0; i < N; i++)
-  { 
-    MoveToEx(hDC, xc + V[i][0].X, yc - V[i][0].Z, NULL);
-    for (j = 1; j < M; j++)
-    {       
-      LineTo(hDC, xc + V[i][j].X, yc - V[i][j].Z);
-    }
-  } 
-
-  for (j = 0; j < M; j++)
-  { 
-    MoveToEx(hDC, xc + V[0][j].X, yc - V[0][j].Z, NULL);
-    for (i = 1; i < N; i++)
-    {       
-      LineTo(hDC, xc + V[i][j].X, yc - V[i][j].Z);
+      DrawQuad(hDC, p0, p1, p2, p3);
     }
   }
 }

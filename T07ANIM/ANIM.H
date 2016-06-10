@@ -63,10 +63,13 @@ struct tagmp2UNIT
   VOID (* Render)( mp2UNIT *Uni, mp2ANIM *Ani );
 };
 
-
+extern mp2ANIM MP2_Anim;
 VOID MP2_AnimInit( HWND hWnd );
 VOID MP2_AnimResize( INT w,INT h );
 VOID MP2_AnimCopyFrame( HDC hDC);
-VOID MP2_AnimAddUnit( mp2ANIM *Ani );
+VOID MP2_AnimAddUnit( mp2UNIT *Uni );
 VOID MP2_AnimClose( VOID );
-VOID VG4_AnimRender( VOID );
+VOID MP2_AnimRender( VOID );
+
+mp2UNIT * MP2_AnimUnitCreate( INT Size );
+mp2UNIT * MP2_UnitCreateBall( DBL x, DBL y, DBL z );

@@ -206,6 +206,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="UNIT sumples"
+				>
+				<File
+					RelativePath=".\SPHERE.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

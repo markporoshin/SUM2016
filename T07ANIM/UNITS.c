@@ -69,7 +69,6 @@ static VOID MP2_UnitRender( mp2UNIT *Uni, mp2ANIM *Ani )
 mp2UNIT * MP2_AnimUnitCreate( INT Size )
 {
   mp2UNIT *Uni;
-
   /* Memory allocation */
   if (Size < sizeof(mp2UNIT) ||
       (Uni = malloc(Size)) == NULL)
