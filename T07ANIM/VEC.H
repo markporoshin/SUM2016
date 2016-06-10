@@ -3,7 +3,9 @@
  * PROGRAMMER: MP2
  * PURPOSE: VECTOR & MATR lib  */
 
+//#include "def.H"
 #include <math.h>
+#include <windows.h>
 #define PI 3.14159265358979323846
 #define D2R(A) ((A) * PI / 180.0)
 

@@ -2,14 +2,13 @@
 /* FILE NAME: MAIN.c
  * PROGRAMMER: MP2
  * PURPOSE:function WinMAIN    */
-#include <windows.h>
-#include "VEC.H"
+#include "ANIM.H"
 
-#define WND_CLASS_NAME "My window class"
-
+#define MP2_WND_CLASS_NAME "My window class"
 
 
-/*LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
+
+LRESULT CALLBACK MP2_MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
 {         
   static BITMAP bm;
   static HBITMAP hBm;
@@ -17,25 +16,18 @@
   static INT h, w, flag=1;
   HDC hDC;
   PAINTSTRUCT ps;
+  SetDbgMemHooks();
   switch(Msg)
   {
   case WM_CREATE:
-    SetTimer(hWnd,0,10,NULL);
-    hDC = GetDC(hWnd);
-    hMemDC = CreateCompatibleDC(hDC);
-    ReleaseDC(hWnd, hDC);
+    MP2_AnimInit(hWnd);
     return 0;
 
   case WM_ERASEBKGND:
     return 0;
 
   case WM_TIMER: 
-    SelectObject(hDC, GetStockObject(DC_PEN));
-    SelectObject(hDC, GetStockObject(DC_BRUSH));
-    SetDCPenColor(hDC, RGB(100,150,0));
-    SetDCBrushColor(hDC, RGB(100,150,0));
-    Rectangle(hMemDC, 0, 0, w+1, h+1);
-    
+    MP2_AnimRender();
     InvalidateRect(hWnd, NULL, FALSE);
     return 0;
 
@@ -45,19 +37,13 @@
   case WM_SIZE:
     w = LOWORD(lParam);
     h = HIWORD(lParam);
-    if(hBm != NULL)
-      DeleteObject(hBm);
-    hDC = GetDC(hWnd);
-    hBm = CreateCompatibleBitmap(hDC, w, h);
-    ReleaseDC(hWnd, hDC);
-    SelectObject(hMemDC, hBm);
-    DeleteObject(hBm);
+    MP2_AnimResize(w, h);
     SendMessage(hWnd, WM_TIMER, 0, 0);
     return 0;
 
-  case WM_PAINT:                                            
+  case WM_PAINT: 
     hDC = BeginPaint(hWnd, &ps);
-    BitBlt(hDC, 0, 0, w, h, hMemDC, 0, 0, SRCCOPY);
+    MP2_AnimCopyFrame(hDC);
     EndPaint(hWnd, &ps);
     return 0;
 
@@ -66,36 +52,54 @@
     return 0;
 
   case WM_DESTROY:
-    DeleteObject(hBm);
-    DeleteDC(hMemDC);
-    KillTimer(hWnd, 0);
-    PostQuitMessage(0);
+    MP2_AnimClose();
     return 0;
   }
   return DefWindowProc(hWnd, Msg, wParam, lParam);
-}*/ 
+} 
 
 
 /* Main program function */
 INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine, INT ShowCmd )
 {
- DBL sum;
- MATR m;
- VEC A, B, C;
+  WNDCLASS wc;
+  HWND hWnd;
+  MSG msg;
 
- A = VecSet(1, 0, 0);
- B = VecSet(0, 1, 0);
- C = VecCrossVec(A, B);
- C = VecCrossVec(B, A);
- sum = VecDotVec(A, B);
+  wc.style = CS_VREDRAW | CS_HREDRAW;
+  wc.cbClsExtra = 0;
+  wc.cbWndExtra = 0;
+  wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+  wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+  wc.lpszMenuName = NULL;
+  wc.hInstance = hInstance;
+  wc.lpfnWndProc = MP2_MyWindowFunc;
+  wc.lpszClassName = MP2_WND_CLASS_NAME;
+  
+  if(!RegisterClass(&wc))
+  {
+    MessageBox(NULL,"Error register window class","Error",MB_OK);
+    return 0;
+  }
 
-
-
- m = MatrIdentity();
- m = MatrMulMatr(MatrTranslate(VecSet(1, 2, 3)), MatrTranslate(VecSet(1, 2, 3)));
- m = MatrTranspose(m);
- //m = MatrMulMatr(m, MatrInverse(m));
- m = MatrMulMatr(m, MatrRotateX(0));
+  hWnd = CreateWindow(MP2_WND_CLASS_NAME,"Anim",
+                      WS_OVERLAPPEDWINDOW,
+                      CW_USEDEFAULT,CW_USEDEFAULT,
+                      CW_USEDEFAULT,CW_USEDEFAULT,
+                      NULL,
+                      NULL,
+                      hInstance,
+                      NULL);
+  ShowWindow(hWnd, SW_SHOWNORMAL);
+  
+  UpdateWindow(hWnd);
+  while (GetMessage(&msg, NULL, 0, 0))
+  {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+  return 0;
 } /* End of Main function */
 
 /* End of file "MAIN.c" */
