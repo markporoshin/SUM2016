@@ -5,6 +5,11 @@
 
 #include "def.H"
 #define MP2_MAX_UNITS 100
+
+  /* Timer data */
+
+
+
 typedef struct tagmp2UNIT mp2UNIT;
 typedef struct
 {
@@ -14,7 +19,13 @@ typedef struct
   HBITMAP hFrame; //- картинка кадра
   mp2UNIT *Units[MP2_MAX_UNITS]; //- массив объектов анимации
   INT NumOfUnits; //- текущее количество объектов анимации
-  /*. . .*/
+  DBL
+    GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
+    Time, DeltaTime,             /* Time with pause and interframe interval */
+    FPS;                         /* Frames per seond value */
+  BOOL
+    IsPause;                     /* Pause flag */
+/*. . .*/
 } mp2ANIM;
 
 
