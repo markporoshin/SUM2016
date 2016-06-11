@@ -4,6 +4,7 @@
  * PURPOSE: main header of project    */
 
 #include "def.H"
+#include "UNITS.H"
 #define MP2_MAX_UNITS 100
 
   /* Timer data */
@@ -19,13 +20,23 @@ typedef struct
   HBITMAP hFrame; //- картинка кадра
   mp2UNIT *Units[MP2_MAX_UNITS]; //- массив объектов анимации
   INT NumOfUnits; //- текущее количество объектов анимации
-  DBL
-    GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
-    Time, DeltaTime,             /* Time with pause and interframe interval */
-    FPS;                         /* Frames per seond value */
-  BOOL
-    IsPause;                     /* Pause flag */
-/*. . .*/
+  /*** Timer ***/
+  DBL GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
+      Time, DeltaTime,             /* Time with pause and interframe interval */
+      FPS;                         /* Frames per seond value */
+  BOOL IsPause;                     /* Pause flag */
+
+    /***  Mouse   ***/
+  INT Mdx, Mdy, Mdz,
+      Mx,  My,  Mz;
+
+  /*** KeyBoard ***/
+  BYTE Keys[256], OldKeys[256], KeysClick[256];
+
+  /*** JoyStick ***/
+  BYTE JBut[32];                    /* Joystick button state */
+  INT JPov;                      /* Joystick point-of-view control [0,1..8] */
+  DBL JX, JY, JZ, JR;              /* Joystick axes */
 } mp2ANIM;
 
 
@@ -73,7 +84,7 @@ struct tagmp2UNIT
    */
   VOID (* Render)( mp2UNIT *Uni, mp2ANIM *Ani );
 };
-
+extern INT MP2_MOUSEWHEEL;
 extern mp2ANIM MP2_Anim;
 VOID MP2_AnimInit( HWND hWnd );
 VOID MP2_AnimResize( INT w,INT h );

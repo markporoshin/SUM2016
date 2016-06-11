@@ -205,6 +205,10 @@
 					RelativePath=".\UNITS.c"
 					>
 				</File>
+				<File
+					RelativePath=".\UNITS.H"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="UNIT sumples"

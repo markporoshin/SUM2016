@@ -31,8 +31,8 @@ LRESULT CALLBACK MP2_MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lPa
     InvalidateRect(hWnd, NULL, FALSE);
     return 0;
 
-  case WM_MOUSEMOVE:
-    return 0;
+  case WM_MOUSEWHEEL:
+    MP2_MOUSEWHEEL += (SHORT)HIWORD(wParam);
 
   case WM_SIZE:
     w = LOWORD(lParam);
@@ -97,9 +97,9 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
                       NULL);
   ShowWindow(hWnd, SW_SHOWNORMAL);
   UpdateWindow(hWnd);
-
-  for(i=0; i < 4; i++)
-    for(j=0; j < 4; j++)    
+  i=1, j=1;
+  //for(i=0; i < 4; i++)
+  //  for(j=0; j < 4; j++)    
        MP2_AnimAddUnit(MP2_UnitCreateBall(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));
   while (GetMessage(&msg, NULL, 0, 0))
   {

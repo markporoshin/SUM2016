@@ -1,8 +1,9 @@
 #include "ANIM.H"
+
 #include <time.h>
 #define  M 100
 #define  N 50
-#define RAND_MAX 180
+
 
 
 typedef struct
@@ -133,17 +134,24 @@ VOID DrawQuad( HDC hDC, POINT P0, POINT P1, POINT P2, POINT P3 )
 } /* End of 'DrawQuad' function */
 VOID sphere( HDC hDC, INT xc, INT yc )
 {
-  DOUBLE phi, theta, x, y, z, phaze = clock() / 1000.0;
-  INT i, j, k, r1 = 100;
+  DOUBLE phi, theta, phaze = clock() / 1000.0;
+  INT i, j,  r1 = 100;
   SYSTEMTIME Time;
   static VEC V[N][M];
   static POINT Ps[N][M], p0, p1, p2, p3;
+  static DOUBLE dx, dy;
+  
   INT img_x, img_y;
   COLORREF c;
   BYTE r,g,b;
   DBL ra1 = Rnd0(), ra2 = Rnd0(), ra3 = Rnd0(), ra4 = Rnd0();
-  
-  
+
+  if (MP2_Anim.JX != 0 && MP2_Anim.JY != 0)
+  {
+     GetLocalTime(&Time);
+  }
+  dx += MP2_Anim.JX * 10;
+  dy += MP2_Anim.JY * 10;
   GetLocalTime(&Time);
   for (i = 0; i < N; i++)
   {
@@ -156,9 +164,9 @@ VOID sphere( HDC hDC, INT xc, INT yc )
       V[i][j].Y = r1 * sin(theta) * sin(phi);
       V[i][j].Z = r1 * cos(theta);
       
-      V[i][j] = PointTransform4(V[i][j] , MatrRotate(ra4, VecSet(ra1, ra2, ra3) ) );
-      Ps[i][j].x = xc + V[i][j].X;
-      Ps[i][j].y = yc + V[i][j].Z;
+      V[i][j] = PointTransform4(V[i][j] , MatrRotate(ra4, VecSet(MP2_Anim.JX, 0, MP2_Anim.JY) ) );
+      Ps[i][j].x = xc + dx + V[i][j].X;
+      Ps[i][j].y = yc + dy + V[i][j].Z;
       //SetPixelV(hDC, V[i][j].X + xc, V[i][j].Z + yc, RGB(b, g, r));
     }
   }

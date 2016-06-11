@@ -4,14 +4,19 @@
  * PURPOSE:function anim    */
 
 #include "ANIM.H"
+#include <stdio.h>
+#pragma comment(lib, "winmm")
+#define MP2_GET_JOYSTIC_AXIS(A)  (2.0 * (ji.dw##A##pos - jc.w##A##min) / (jc.w##A##max - jc.w##A##min - 1) - 1)
 
+
+INT MP2_MOUSEWHEEL;
 mp2ANIM MP2_Anim;
 static UINT64
-  MP2_StartTime,  /* Start program time */
-  MP2_OldTime,    /* Time from program start to previous frame */
-  MP2_OldTimeFPS, /* Old time FPS measurement */
-  MP2_PauseTime,  /* Time during pause period */
-  MP2_TimePerSec, /* Timer resolution */
+  MP2_StartTime,    /* Start program time */
+  MP2_OldTime,      /* Time from program start to previous frame */
+  MP2_OldTimeFPS,   /* Old time FPS measurement */
+  MP2_PauseTime,    /* Time during pause period */
+  MP2_TimePerSec,   /* Timer resolution */
   MP2_FrameCounter; /* Frames counter */
 
 VOID MP2_AnimInit( HWND hWnd )
@@ -31,6 +36,8 @@ VOID MP2_AnimInit( HWND hWnd )
   QueryPerformanceCounter(&t);
   MP2_StartTime = MP2_OldTime = MP2_OldTimeFPS = t.QuadPart;
   MP2_PauseTime = 0;
+
+
 }
 
 VOID MP2_AnimResize( INT w,INT h )
@@ -79,9 +86,66 @@ VOID MP2_AnimRender( VOID )
 {
   INT i;
   LARGE_INTEGER t;
+  POINT pt;
   srand(1);
   
-    /*** Handle timer ***/
+  
+  /* Mouse wheel */
+  MP2_Anim.Mdz = MP2_MOUSEWHEEL;
+  MP2_Anim.Mz += MP2_MOUSEWHEEL;
+  MP2_MOUSEWHEEL = 0;
+
+  /* Mouse */
+  GetCursorPos(&pt);
+  ScreenToClient(MP2_Anim.hWnd, &pt);
+  MP2_Anim.Mdx = pt.x - MP2_Anim.Mx;
+  MP2_Anim.Mdy = pt.y - MP2_Anim.My;
+  MP2_Anim.Mx = pt.x;
+  MP2_Anim.My = pt.y;
+
+  /*Keyboard*/
+  GetKeyboardState(MP2_Anim.Keys);
+  for ( i = 0; i < 256; i++ )
+  {
+    MP2_Anim.Keys[i] >>= 7;
+    if (!MP2_Anim.OldKeys[i] && MP2_Anim.Keys[i])
+      MP2_Anim.KeysClick[i] = 1;
+    else
+      MP2_Anim.KeysClick[i] = 0;
+  }
+  memcpy(MP2_Anim.OldKeys, MP2_Anim.Keys, 256);
+
+  /* joystick */
+  if (joyGetNumDevs() > 0)
+  {
+    JOYCAPS jc;
+
+    /* Get joystick info */
+    if (joyGetDevCaps(JOYSTICKID1, &jc, sizeof(jc)) == JOYERR_NOERROR)
+    {
+      JOYINFOEX ji;
+
+      ji.dwSize = sizeof(JOYINFOEX);
+      ji.dwFlags = JOY_RETURNALL;
+      if (joyGetPosEx(JOYSTICKID1, &ji) == JOYERR_NOERROR)
+      {
+        /* Buttons */
+        for (i = 0; i < 32; i++)
+          MP2_Anim.JBut[i] = (ji.dwButtons >> i) & 1;
+
+        /* Axes */
+        MP2_Anim.JX = MP2_GET_JOYSTIC_AXIS(X);
+        MP2_Anim.JY = MP2_GET_JOYSTIC_AXIS(Y);
+        MP2_Anim.JZ = MP2_GET_JOYSTIC_AXIS(Z);
+        MP2_Anim.JR = MP2_GET_JOYSTIC_AXIS(R);
+
+        /* Point of view */
+        MP2_Anim.JPov = ji.dwPOV == 0xFFFF ? 0 : ji.dwPOV / 4500 + 1;
+      }
+    }
+  }
+
+  /*** Handle timer ***/
   MP2_FrameCounter++;
   QueryPerformanceCounter(&t);
   /* Global time */
@@ -107,11 +171,12 @@ VOID MP2_AnimRender( VOID )
                                          (DBL)(t.QuadPart - MP2_OldTimeFPS);
     MP2_OldTimeFPS = t.QuadPart;
     MP2_FrameCounter = 0;
-    sprintf(str, "FPS: %.5f", MP2_Anim.FPS);
+    sprintf(str, "Anim FPS: %.5f Mouse Coord:  %i, %i JoyStick Coord: %f %f", MP2_Anim.FPS, MP2_Anim.Mx, MP2_Anim.My, MP2_Anim.JX,MP2_Anim.JX);
     SetWindowText(MP2_Anim.hWnd, str);
   }
   MP2_OldTime = t.QuadPart;
-  /*. . . опросили все (kbd, mouse, joystick)*/   SelectObject(MP2_Anim.hDC, GetStockObject(DC_PEN));
+  /*. . . опросили все (kbd, mouse, joystick)*/   
+  SelectObject(MP2_Anim.hDC, GetStockObject(DC_PEN));
   SelectObject(MP2_Anim.hDC, GetStockObject(DC_BRUSH));
   SetDCPenColor(MP2_Anim.hDC, RGB(100,150,200));
   SetDCBrushColor(MP2_Anim.hDC, RGB(100,150,200)); 
