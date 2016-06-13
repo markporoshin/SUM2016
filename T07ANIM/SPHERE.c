@@ -1,5 +1,5 @@
 #include "ANIM.H"
-
+#include "resource.h"
 #include <time.h>
 #define  M 100
 #define  N 50
@@ -80,6 +80,7 @@ VOID LoadSphere( VOID )
 
   /* Load image from file */
   hMemDC = CreateCompatibleDC(hDC);
+  //hBm = LoadBitmap(MP2_Anim.cs->hInstance, (CHAR *)IDB_BITMAP1);
   hBm = LoadImage(NULL, "GLOBE.BMP", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
   GetObject(hBm, sizeof(bm), &bm);
   Globe.W = bm.bmWidth;
@@ -140,18 +141,26 @@ VOID sphere( HDC hDC, INT xc, INT yc )
   static VEC V[N][M];
   static POINT Ps[N][M], p0, p1, p2, p3;
   static DOUBLE dx, dy;
-  
+  DOUBLE x, y, angle;
   INT img_x, img_y;
   COLORREF c;
   BYTE r,g,b;
   DBL ra1 = Rnd0(), ra2 = Rnd0(), ra3 = Rnd0(), ra4 = Rnd0();
-
-  if (MP2_Anim.JX != 0 && MP2_Anim.JY != 0)
-  {
-     GetLocalTime(&Time);
-  }
-  dx += MP2_Anim.JX * 10;
-  dy += MP2_Anim.JY * 10;
+  
+  x = MP2_Anim.JX;
+  y = MP2_Anim.JY;
+  if(x != 0)
+    if (x > 0)
+      angle = atan(y / x);
+    else
+      angle = -atan(y / x);
+  else
+      if (y > 0)
+         angle = 3 * PI / 2.0;
+      else
+        angle = PI / 2.0;
+  dx += MP2_Anim.JX * 2;
+  dy += MP2_Anim.JY * 2;
   GetLocalTime(&Time);
   for (i = 0; i < N; i++)
   {
@@ -164,7 +173,7 @@ VOID sphere( HDC hDC, INT xc, INT yc )
       V[i][j].Y = r1 * sin(theta) * sin(phi);
       V[i][j].Z = r1 * cos(theta);
       
-      V[i][j] = PointTransform4(V[i][j] , MatrRotate(ra4, VecSet(MP2_Anim.JX, 0, MP2_Anim.JY) ) );
+      V[i][j] = PointTransform4(V[i][j] , MatrRotate(angle / PI * 180, VecSet(0, 1, 0) ) );
       Ps[i][j].x = xc + dx + V[i][j].X;
       Ps[i][j].y = yc + dy + V[i][j].Z;
       //SetPixelV(hDC, V[i][j].X + xc, V[i][j].Z + yc, RGB(b, g, r));

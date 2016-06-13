@@ -37,6 +37,8 @@ VOID MP2_AnimInit( HWND hWnd )
   MP2_StartTime = MP2_OldTime = MP2_OldTimeFPS = t.QuadPart;
   MP2_PauseTime = 0;
 
+  MP2_RndMatrWorld = MatrIdentity();
+  MP2_RndMatrView  = MatrMulMatr(MatrIdentity(), MatrTranslate(VecSet(-1, -1, 0)));
 
 }
 
@@ -51,6 +53,7 @@ VOID MP2_AnimResize( INT w,INT h )
   MP2_Anim.hFrame = CreateCompatibleBitmap(hDC, w, h);
   ReleaseDC(MP2_Anim.hWnd, hDC);
   SelectObject(MP2_Anim.hDC, MP2_Anim.hFrame);
+  MP2_RndProj();
 }
 
 VOID MP2_AnimCopyFrame( HDC hDC )
@@ -85,11 +88,12 @@ VOID MP2_AnimClose( VOID )
 VOID MP2_AnimRender( VOID )
 {
   INT i;
+  static DBL dx = 0, dy = 0;
   LARGE_INTEGER t;
   POINT pt;
   srand(1);
-  
-  
+
+ 
   /* Mouse wheel */
   MP2_Anim.Mdz = MP2_MOUSEWHEEL;
   MP2_Anim.Mz += MP2_MOUSEWHEEL;
@@ -194,5 +198,7 @@ VOID MP2_AnimRender( VOID )
     /* можно сбросить все кисти и перья */
     MP2_Anim.Units[i]->Render(MP2_Anim.Units[i], &MP2_Anim);
   }
-
+  dx += MP2_Anim.JX / 10;
+  dy += MP2_Anim.JY / 10;
+  MP2_RndMatrView = MatrView(VecSet(MP2_Anim.JX * 10, MP2_Anim.JY * 10, MP2_Anim.JZ * 10), VecSet(0,0,0), VecSet(0,1,0));
 }

@@ -5,6 +5,7 @@
 
 #include "def.H"
 #include "UNITS.H"
+#include "IMAGE.h"
 #define MP2_MAX_UNITS 100
 
   /* Timer data */
@@ -14,6 +15,7 @@
 typedef struct tagmp2UNIT mp2UNIT;
 typedef struct
 {
+  CREATESTRUCT *cs;
   HWND hWnd; //- окно
   HDC hDC;   //- контекст в памяти
   INT W, H;  //- размер окна
@@ -84,6 +86,22 @@ struct tagmp2UNIT
    */
   VOID (* Render)( mp2UNIT *Uni, mp2ANIM *Ani );
 };
+
+
+typedef struct
+{
+  VEC *p;
+  INT NumOfP;
+  INT(*Edges)[2];
+  INT NumOfE;
+}mp2PRIM;
+
+extern MATR MP2_RndMatrWorld/* = MatrIdentity()*/,
+            MP2_RndMatrView /* = MatrMulMatr(MatrIdentity, MatrTranslate(VecSet(-1, -1, 0)))*/,
+            MP2_RndMatrProj;
+extern DBL  MP2_RndProjDist,
+     MP2_RndFarClip,
+     MP2_RndProjSize;
 extern INT MP2_MOUSEWHEEL;
 extern mp2ANIM MP2_Anim;
 VOID MP2_AnimInit( HWND hWnd );
@@ -95,4 +113,7 @@ VOID MP2_AnimRender( VOID );
 
 mp2UNIT * MP2_AnimUnitCreate( INT Size );
 mp2UNIT * MP2_UnitCreateBall( DBL x, DBL y, DBL z );
+mp2UNIT * MP2_UnitCreateCube( DBL x, DBL y, DBL z );
 VOID LoadSphere( VOID );
+MATR MatrView( VEC Loc, VEC At, VEC Up1 );
+VOID MP2_RndProj( VOID );

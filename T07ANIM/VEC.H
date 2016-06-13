@@ -302,3 +302,17 @@ __inline MATR MatrInverse( MATR M )
           M.A[p[i][2]][p[j][0]], M.A[p[i][2]][p[j][1]], M.A[p[i][2]][p[j][2]]) / det;
   return r;
 }
+
+__inline MATR MatrFrustum( DBL l, DBL r, DBL b, DBL t, DBL n, DBL f )
+{
+  MATR m =
+  {
+    {
+      {    2*n/(r-l),             0,              0,   0  },
+      {            0,     2*n/(t-b),              0,   0  },
+      {  (r+l)/(r-l),   (t+b)/(t-b),   -(f+n)/(f-n),  -1  },
+      {            0,             0,   -2*n*f/(f-n),   0  }
+    }
+  };
+  return m;
+}

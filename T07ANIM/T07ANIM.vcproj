@@ -179,6 +179,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\def.H"
+				>
+			</File>
+			<File
 				RelativePath=".\MAIN.c"
 				>
 			</File>
@@ -202,6 +206,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\RENDER.c"
+					>
+				</File>
+				<File
 					RelativePath=".\UNITS.c"
 					>
 				</File>
@@ -214,7 +222,23 @@
 				Name="UNIT sumples"
 				>
 				<File
+					RelativePath=".\CUBE.c"
+					>
+				</File>
+				<File
 					RelativePath=".\SPHERE.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Image"
+				>
+				<File
+					RelativePath=".\IMAGE.c"
+					>
+				</File>
+				<File
+					RelativePath=".\IMAGE.H"
 					>
 				</File>
 			</Filter>
@@ -225,7 +249,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\def.H"
+				RelativePath=".\resource.h"
 				>
 			</File>
 		</Filter>
@@ -234,6 +258,14 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\GLOBE.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\T07ANIM.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

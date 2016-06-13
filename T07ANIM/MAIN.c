@@ -9,7 +9,9 @@
 
 
 LRESULT CALLBACK MP2_MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
-{         
+{    
+  MINMAXINFO *MinMax;
+
   static BITMAP bm;
   static HBITMAP hBm;
   static HDC hMemDC;
@@ -19,7 +21,17 @@ LRESULT CALLBACK MP2_MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lPa
   SetDbgMemHooks();
   switch(Msg)
   {
+  case WM_GETMINMAXINFO:
+    MinMax = (MINMAXINFO *)lParam;
+    MinMax -> ptMaxTrackSize.y =
+      GetSystemMetrics(SM_CYMAXTRACK) +
+      GetSystemMetrics(SM_CYCAPTION) +
+      GetSystemMetrics(SM_CYMENU) +
+      GetSystemMetrics(SM_CYBORDER) * 2;
+      return 0;
+
   case WM_CREATE:
+    MP2_Anim.cs = (CHAR *)lParam;
     MP2_AnimInit(hWnd);
     return 0;
 
@@ -33,6 +45,7 @@ LRESULT CALLBACK MP2_MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lPa
 
   case WM_MOUSEWHEEL:
     MP2_MOUSEWHEEL += (SHORT)HIWORD(wParam);
+    return 0;
 
   case WM_SIZE:
     w = LOWORD(lParam);
@@ -69,7 +82,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   
 
   SetDbgMemHooks();
-  LoadSphere();
+ 
   wc.style = CS_VREDRAW | CS_HREDRAW;
   wc.cbClsExtra = 0;
   wc.cbWndExtra = 0;
@@ -98,9 +111,11 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   ShowWindow(hWnd, SW_SHOWNORMAL);
   UpdateWindow(hWnd);
   i=1, j=1;
+  LoadSphere();
   //for(i=0; i < 4; i++)
   //  for(j=0; j < 4; j++)    
-       MP2_AnimAddUnit(MP2_UnitCreateBall(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));
+  //MP2_AnimAddUnit(MP2_UnitCreateBall(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));
+  MP2_AnimAddUnit(MP2_UnitCreateCube(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));
   while (GetMessage(&msg, NULL, 0, 0))
   {
     TranslateMessage(&msg);
