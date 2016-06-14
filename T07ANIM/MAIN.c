@@ -2,8 +2,8 @@
 /* FILE NAME: MAIN.c
  * PROGRAMMER: MP2
  * PURPOSE:function WinMAIN    */
-#include "ANIM.H"
 
+#include "UNITS.H"
 #define MP2_WND_CLASS_NAME "My window class"
 
 
@@ -103,7 +103,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   hWnd = CreateWindow(MP2_WND_CLASS_NAME,"Anim",
                       WS_OVERLAPPEDWINDOW,
                       CW_USEDEFAULT,CW_USEDEFAULT,
-                      CW_USEDEFAULT,CW_USEDEFAULT,
+                      1000, 1000,
                       NULL,
                       NULL,
                       hInstance,
@@ -112,10 +112,11 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   UpdateWindow(hWnd);
   i=1, j=1;
   LoadSphere();
+   
+  /*MP2_AnimAddUnit(MP2_UnitCreateBall(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));*/
   //for(i=0; i < 4; i++)
-  //  for(j=0; j < 4; j++)    
-  //MP2_AnimAddUnit(MP2_UnitCreateBall(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));
-  MP2_AnimAddUnit(MP2_UnitCreateCube(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));
+  //  for(j=0; j < 4; j++)  
+      MP2_AnimAddUnit(MP2_UnitCreateCube(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));
   while (GetMessage(&msg, NULL, 0, 0))
   {
     TranslateMessage(&msg);

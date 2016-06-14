@@ -37,6 +37,7 @@ VOID MP2_AnimInit( HWND hWnd )
   MP2_StartTime = MP2_OldTime = MP2_OldTimeFPS = t.QuadPart;
   MP2_PauseTime = 0;
 
+  MP2_RndMatrProj = MatrFrustum(-1, 1, -1, 1, 1, 100);
   MP2_RndMatrWorld = MatrIdentity();
   MP2_RndMatrView  = MatrMulMatr(MatrIdentity(), MatrTranslate(VecSet(-1, -1, 0)));
 
@@ -88,7 +89,7 @@ VOID MP2_AnimClose( VOID )
 VOID MP2_AnimRender( VOID )
 {
   INT i;
-  static DBL dx = 0, dy = 0;
+  static FLT dx = 0, dy = 0;
   LARGE_INTEGER t;
   POINT pt;
   srand(1);
@@ -153,8 +154,8 @@ VOID MP2_AnimRender( VOID )
   MP2_FrameCounter++;
   QueryPerformanceCounter(&t);
   /* Global time */
-  MP2_Anim.GlobalTime = (DBL)(t.QuadPart - MP2_StartTime) / MP2_TimePerSec;
-  MP2_Anim.GlobalDeltaTime = (DBL)(t.QuadPart - MP2_OldTime) / MP2_TimePerSec;
+  MP2_Anim.GlobalTime = (FLT)(t.QuadPart - MP2_StartTime) / MP2_TimePerSec;
+  MP2_Anim.GlobalDeltaTime = (FLT)(t.QuadPart - MP2_OldTime) / MP2_TimePerSec;
   /* Time with pause */
   if (MP2_Anim.IsPause)
   {
@@ -164,7 +165,7 @@ VOID MP2_AnimRender( VOID )
   else
   {
     MP2_Anim.DeltaTime = MP2_Anim.GlobalDeltaTime;
-    MP2_Anim.Time = (DBL)(t.QuadPart - MP2_PauseTime - MP2_StartTime) / MP2_TimePerSec;
+    MP2_Anim.Time = (FLT)(t.QuadPart - MP2_PauseTime - MP2_StartTime) / MP2_TimePerSec;
   }
   /* FPS */
   if (t.QuadPart - MP2_OldTimeFPS > MP2_TimePerSec)
@@ -172,7 +173,7 @@ VOID MP2_AnimRender( VOID )
     CHAR str[100];
 
     MP2_Anim.FPS = MP2_FrameCounter * MP2_TimePerSec /
-                                         (DBL)(t.QuadPart - MP2_OldTimeFPS);
+                                         (FLT)(t.QuadPart - MP2_OldTimeFPS);
     MP2_OldTimeFPS = t.QuadPart;
     MP2_FrameCounter = 0;
     sprintf(str, "Anim FPS: %.5f Mouse Coord:  %i, %i JoyStick Coord: %f %f", MP2_Anim.FPS, MP2_Anim.Mx, MP2_Anim.My, MP2_Anim.JX,MP2_Anim.JX);
@@ -200,5 +201,5 @@ VOID MP2_AnimRender( VOID )
   }
   dx += MP2_Anim.JX / 10;
   dy += MP2_Anim.JY / 10;
-  MP2_RndMatrView = MatrView(VecSet(MP2_Anim.JX * 10, MP2_Anim.JY * 10, MP2_Anim.JZ * 10), VecSet(0,0,0), VecSet(0,1,0));
+  MP2_RndMatrView = MatrView(VecSet(MP2_Anim.JX * 30, MP2_Anim.JY * 30, MP2_Anim.JZ * 30), VecSet(0,0,0), VecSet(0,1,0));
 }

@@ -3,8 +3,8 @@
  * PROGRAMMER: MP2
  * PURPOSE: malloc & MATR lib  */
 
-#pragma warning(disable:4244)
-#pragma warning(disable:4028)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4028)
 #ifndef __DEF_H_
 #define __DEF_H_
 

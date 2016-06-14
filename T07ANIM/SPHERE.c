@@ -27,19 +27,19 @@ VOID sphere( HDC hDC, INT xc, INT yc );
 /* Random number obtain in range [0.0 .. 1.0] function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (DBL) result random number.
+ *   (FLT) result random number.
  */
-__inline DBL Rnd0( VOID )
+__inline FLT Rnd0( VOID )
 {
-  return (DBL)rand() / RAND_MAX;
+  return (FLT)rand() / RAND_MAX;
 } /* End of 'Rnd0' function */
 
 /* Random number obtain in range [-1.0 .. 1.0] function.
  * ARGUMENTS: None.
  * RETURNS:
- *   (DBL) result random number.
+ *   (FLT) result random number.
  */
-__inline DBL Rnd1( VOID )
+__inline FLT Rnd1( VOID )
 {
   return 2.0 * rand() / RAND_MAX - 1;
 } /* End of 'Rnd1' function */
@@ -55,7 +55,7 @@ static VOID MP2_UnitRender( mp2SPHERE *Uni, mp2ANIM *Ani )
   sphere(Ani->hDC, Uni->Pos.X, Uni->Pos.Y); 
 }
 
-mp2UNIT * MP2_UnitCreateBall( DBL x, DBL y, DBL z )
+mp2UNIT * MP2_UnitCreateBall( FLT x, FLT y, FLT z )
 {
   mp2SPHERE *Uni;
 
@@ -145,7 +145,7 @@ VOID sphere( HDC hDC, INT xc, INT yc )
   INT img_x, img_y;
   COLORREF c;
   BYTE r,g,b;
-  DBL ra1 = Rnd0(), ra2 = Rnd0(), ra3 = Rnd0(), ra4 = Rnd0();
+  FLT ra1 = Rnd0(), ra2 = Rnd0(), ra3 = Rnd0(), ra4 = Rnd0();
   
   x = MP2_Anim.JX;
   y = MP2_Anim.JY;

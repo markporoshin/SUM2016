@@ -4,7 +4,7 @@
  * PURPOSE: main header of project    */
 
 #include "def.H"
-#include "UNITS.H"
+
 #include "IMAGE.h"
 #define MP2_MAX_UNITS 100
 
@@ -23,7 +23,7 @@ typedef struct
   mp2UNIT *Units[MP2_MAX_UNITS]; //- массив объектов анимации
   INT NumOfUnits; //- текущее количество объектов анимации
   /*** Timer ***/
-  DBL GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
+  FLT GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
       Time, DeltaTime,             /* Time with pause and interframe interval */
       FPS;                         /* Frames per seond value */
   BOOL IsPause;                     /* Pause flag */
@@ -38,7 +38,7 @@ typedef struct
   /*** JoyStick ***/
   BYTE JBut[32];                    /* Joystick button state */
   INT JPov;                      /* Joystick point-of-view control [0,1..8] */
-  DBL JX, JY, JZ, JR;              /* Joystick axes */
+  FLT JX, JY, JZ, JR;              /* Joystick axes */
 } mp2ANIM;
 
 
@@ -99,7 +99,7 @@ typedef struct
 extern MATR MP2_RndMatrWorld/* = MatrIdentity()*/,
             MP2_RndMatrView /* = MatrMulMatr(MatrIdentity, MatrTranslate(VecSet(-1, -1, 0)))*/,
             MP2_RndMatrProj;
-extern DBL  MP2_RndProjDist,
+extern FLT  MP2_RndProjDist,
      MP2_RndFarClip,
      MP2_RndProjSize;
 extern INT MP2_MOUSEWHEEL;
@@ -110,10 +110,7 @@ VOID MP2_AnimCopyFrame( HDC hDC);
 VOID MP2_AnimAddUnit( mp2UNIT *Uni );
 VOID MP2_AnimClose( VOID );
 VOID MP2_AnimRender( VOID );
-
-mp2UNIT * MP2_AnimUnitCreate( INT Size );
-mp2UNIT * MP2_UnitCreateBall( DBL x, DBL y, DBL z );
-mp2UNIT * MP2_UnitCreateCube( DBL x, DBL y, DBL z );
-VOID LoadSphere( VOID );
-MATR MatrView( VEC Loc, VEC At, VEC Up1 );
 VOID MP2_RndProj( VOID );
+BOOL MP2_RndPrimLoad( mp2PRIM *Pr, CHAR *FileName );
+VOID MP2_RndPrimFree( mp2PRIM *Pr );
+mp2UNIT * MP2_AnimUnitCreate( INT Size );

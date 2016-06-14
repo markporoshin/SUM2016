@@ -5,8 +5,9 @@ typedef struct
 {
   mp2UNIT;
   VEC Pos;
-
+  mp2PRIM p;
 }mp2CUBE;
+
 VEC CubeP[] =
 {
   {-1, -1,  1},
@@ -31,17 +32,28 @@ mp2PRIM Cube =
   CubeE, sizeof(CubeE) / sizeof(CubeE[0])
 };
 
-static VOID MP2_UnitInit( mp2PRIM *Uni, mp2ANIM *Ani )
+static VOID MP2_UnitInit( mp2CUBE *Uni, mp2ANIM *Ani )
 {
-   
+  MP2_RndPrimLoad( &Uni->p, "cow.g3d" ); 
 } /* End of 'MP2_UnitInit' function */
 
-static VOID MP2_UnitRender( mp2PRIM *Uni, mp2ANIM *Ani )
+static VOID MP2_UnitRender( mp2CUBE *Uni, mp2ANIM *Ani )
 {
-  MP2_RndPrimDraw( &Cube );
+  MP2_RndPrimDraw( &Uni->p );
 }
 
-mp2UNIT * MP2_UnitCreateCube( DBL x, DBL y, DBL z )
+static VOID MP2_UnitClose( mp2CUBE *Uni, mp2ANIM *Ani )
+{
+  MP2_RndPrimFree( &Uni->p );
+}
+
+
+static VOID MP2_UnitResponse( mp2CUBE *Uni, mp2ANIM *Ani )
+{
+  
+}
+
+mp2UNIT * MP2_UnitCreateCube( FLT x, FLT y, FLT z )
 {
   mp2CUBE *Uni;
 
@@ -51,7 +63,8 @@ mp2UNIT * MP2_UnitCreateCube( DBL x, DBL y, DBL z )
   /* Setup unit methods */
   Uni->Init = (VOID *)MP2_UnitInit;
   Uni->Render = (VOID *)MP2_UnitRender;
-  
+  Uni->Response = (VOID *)MP2_UnitResponse;
+  Uni->Close = (VOID *)MP2_UnitClose;
   return (mp2UNIT *)Uni;
 } /* End of 'MP2_UnitCreateBall' function */
 
@@ -62,37 +75,6 @@ mp2UNIT * MP2_UnitCreateCube( DBL x, DBL y, DBL z )
  *       mp2PRIM *Pr;
  * RETURNS: None.
  */
-VOID MP2_RndPrimDraw( mp2PRIM *Pr )
-{
-  INT i;
-  MATR M;
-  POINT *pts;
 
-  /* Build transform matrix */
-  M = MatrMulMatr(MP2_RndMatrWorld,
-    MatrMulMatr(MP2_RndMatrView, MP2_RndMatrProj));
 
-  /* Transform all points */
-  pts = malloc(sizeof(POINT) * Pr->NumOfP);
-  if (pts == NULL)
-    return;
-  for (i = 0; i < Pr->NumOfP; i++)
-  {
-    /* NDC */
-    VEC p = PointTransform4(Pr->p[i], M);
 
-    pts[i].x = (p.X + 1) * MP2_Anim.W / 2;
-    pts[i].y = (-p.Y + 1) * MP2_Anim.H / 2;
-  }
-
-  /* Draw all lines */
-  for (i = 0; i < Pr->NumOfE; i++)
-  {
-    INT n0 = Pr->Edges[i][0], n1 = Pr->Edges[i][1];
-    SelectObject(MP2_Anim.hDC, GetStockObject(DC_PEN));
-    SetDCPenColor(MP2_Anim.hDC, RGB(i * 12, i * 255 / Pr->NumOfE, 255 - (i) * 255 / Pr->NumOfE));
-    MoveToEx(MP2_Anim.hDC, pts[n0].x, pts[n0].y, NULL);
-    LineTo(MP2_Anim.hDC, pts[n1].x, pts[n1].y);
-  }
-  free(pts);
-} /* End of 'MP2_RndPrimDraw' function */
