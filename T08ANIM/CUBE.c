@@ -56,7 +56,7 @@ static VOID MP2_UnitResponse( mp2CUBE *Uni, mp2ANIM *Ani )
 mp2UNIT * MP2_UnitCreateCube( FLT x, FLT y, FLT z )
 {
   mp2CUBE *Uni;
-  MP2_RndMatrWorld = MP2_
+
   if ((Uni = (mp2CUBE *)MP2_AnimUnitCreate( sizeof(mp2CUBE) )) == NULL)
     return NULL;
   Uni->Pos = VecSet(x, y, z); 

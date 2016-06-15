@@ -53,6 +53,16 @@ __inline VEC VecSet( FLT X, FLT Y, FLT Z )
 }
 /* end of function "VecSet"*/
 
+__inline VEC4 Vec4Set( FLT a, FLT b, FLT c, FLT d )
+{
+  VEC4 V;
+  V.W = a;
+  V.X = b;
+  V.Y = c;
+  V.Z = d;
+  return V;
+}
+
 /* begin of function "VecAddVec" */
 __inline VEC VecAddVec( VEC A, VEC B )
 {
@@ -337,25 +347,7 @@ __inline MATR MatrFrustum( FLT l, FLT r, FLT b, FLT t, FLT n, FLT f )
   return m;
 }
 
-/* Random number obtain in range [0.0 .. 1.0] function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (FLT) result random number.
- */
-__inline FLT Rnd0( VOID )
-{
-  return (FLT)rand() / RAND_MAX;
-} /* End of 'Rnd0' function */
 
-/* Random number obtain in range [-1.0 .. 1.0] function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (FLT) result random number.
- */
-__inline FLT Rnd1( VOID )
-{
-  return 2.0 * rand() / RAND_MAX - 1;
-} /* End of 'Rnd1' function */
 
 
 __inline MATR MatrView( VEC Loc, VEC At, VEC Up1 )

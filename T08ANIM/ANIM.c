@@ -6,6 +6,9 @@
 #include "ANIM.H"
 #include <stdio.h>
 #pragma comment(lib, "winmm")
+#pragma comment(lib, "opengl32")
+#pragma comment(lib, "glu32")
+#pragma comment(lib, "glew32s")
 #define MP2_GET_JOYSTIC_AXIS(A)  (2.0 * (ji.dw##A##pos - jc.w##A##min) / (jc.w##A##max - jc.w##A##min - 1) - 1)
 
 
@@ -21,15 +24,40 @@ static UINT64
 
 VOID MP2_AnimInit( HWND hWnd )
 { 
-  HDC hDC;
+  INT i;
+  PIXELFORMATDESCRIPTOR pfd = {0};
+
   LARGE_INTEGER t;
-  MP2_Anim.hWnd = hWnd;
-  SetTimer(hWnd, 0, 10, NULL);
-  hDC = GetDC(hWnd);
-  MP2_Anim.hDC = CreateCompatibleDC(hDC);
-  ReleaseDC(hWnd, hDC);
+  
+ 
   MP2_Anim.NumOfUnits = 0;
   
+  memset(&MP2_Anim, 0, sizeof(mp2ANIM));
+  MP2_Anim.hWnd = hWnd;
+  MP2_Anim.hDC = GetDC(hWnd);
+
+    /*** openGl ***/
+  pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+  pfd.nVersion = 1;
+  pfd.dwFlags = PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
+  pfd.cColorBits = 32;
+  pfd.cDepthBits = 32;
+  i = ChoosePixelFormat(MP2_Anim.hDC, &pfd);
+  DescribePixelFormat(MP2_Anim.hDC, i, sizeof(pfd), &pfd);
+  SetPixelFormat(MP2_Anim.hDC, i, &pfd);
+    /* OpenGL init: setup rendering context */
+  MP2_Anim.hGLRC = wglCreateContext(MP2_Anim.hDC);
+  wglMakeCurrent(MP2_Anim.hDC, MP2_Anim.hGLRC);
+  /* OpenGL init: setup extensions: GLEW library */
+  if (glewInit() != GLEW_OK ||
+      !(GLEW_ARB_vertex_shader && GLEW_ARB_fragment_shader))
+  {
+    wglMakeCurrent(NULL, NULL);
+    wglDeleteContext(MP2_Anim.hGLRC);
+    ReleaseDC(MP2_Anim.hWnd, MP2_Anim.hDC);
+    exit(0);
+  }
+
     /*** init timer ***/
   QueryPerformanceFrequency(&t);
   MP2_TimePerSec = t.QuadPart;
@@ -41,25 +69,23 @@ VOID MP2_AnimInit( HWND hWnd )
   MP2_RndMatrWorld = MatrIdentity();
   MP2_RndMatrView  = MatrMulMatr(MatrIdentity(), MatrTranslate(VecSet(-1, -1, 0)));
 
+  /* OpenGL specific initialization */
+  glClearColor(0.3, 0.5, 0.7, 1);
+  glEnable(GL_DEPTH_TEST );
+  /* glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
 }
 
 VOID MP2_AnimResize( INT w,INT h )
 {
-  HDC hDC;
-  if(MP2_Anim.hFrame != NULL)
-    DeleteObject(MP2_Anim.hFrame);
   MP2_Anim.W = w;
   MP2_Anim.H = h;
-  hDC = GetDC(MP2_Anim.hWnd);
-  MP2_Anim.hFrame = CreateCompatibleBitmap(hDC, w, h);
-  ReleaseDC(MP2_Anim.hWnd, hDC);
-  SelectObject(MP2_Anim.hDC, MP2_Anim.hFrame);
+  glViewport(0, 0, w, h);
   MP2_RndProj();
 }
 
-VOID MP2_AnimCopyFrame( HDC hDC )
+VOID MP2_AnimCopyFrame( VOID )
 {
-   BitBlt(hDC, 0, 0, MP2_Anim.W, MP2_Anim.H, MP2_Anim.hDC, 0, 0, SRCCOPY);
+  SwapBuffers(MP2_Anim.hDC);
 }
 
 VOID MP2_AnimAddUnit( mp2UNIT *Uni )
@@ -79,8 +105,13 @@ VOID MP2_AnimClose( VOID )
     MP2_Anim.Units[i]->Close(MP2_Anim.Units[i], &MP2_Anim);
     free(MP2_Anim.Units[i]);
   }
+  /* Delete rendering context */
+  wglMakeCurrent(NULL, NULL);
+  wglDeleteContext(MP2_Anim.hGLRC);
+
+  /* Delete GDI data */
+  ReleaseDC(MP2_Anim.hWnd, MP2_Anim.hDC);
   DeleteDC(MP2_Anim.hDC);
-  DeleteObject(MP2_Anim.hFrame);
   KillTimer(MP2_Anim.hWnd, 0);
   memset(&MP2_Anim, 0, sizeof(mp2ANIM));
   PostQuitMessage(0);
@@ -94,7 +125,6 @@ VOID MP2_AnimRender( VOID )
   POINT pt;
   srand(1);
 
- 
   /* Mouse wheel */
   MP2_Anim.Mdz = MP2_MOUSEWHEEL;
   MP2_Anim.Mz += MP2_MOUSEWHEEL;
@@ -153,9 +183,11 @@ VOID MP2_AnimRender( VOID )
   /*** Handle timer ***/
   MP2_FrameCounter++;
   QueryPerformanceCounter(&t);
+  
   /* Global time */
   MP2_Anim.GlobalTime = (FLT)(t.QuadPart - MP2_StartTime) / MP2_TimePerSec;
   MP2_Anim.GlobalDeltaTime = (FLT)(t.QuadPart - MP2_OldTime) / MP2_TimePerSec;
+  
   /* Time with pause */
   if (MP2_Anim.IsPause)
   {
@@ -167,6 +199,7 @@ VOID MP2_AnimRender( VOID )
     MP2_Anim.DeltaTime = MP2_Anim.GlobalDeltaTime;
     MP2_Anim.Time = (FLT)(t.QuadPart - MP2_PauseTime - MP2_StartTime) / MP2_TimePerSec;
   }
+
   /* FPS */
   if (t.QuadPart - MP2_OldTimeFPS > MP2_TimePerSec)
   {
@@ -179,29 +212,22 @@ VOID MP2_AnimRender( VOID )
     sprintf(str, "Anim FPS: %.5f Mouse Coord:  %i, %i JoyStick Coord: %f %f", MP2_Anim.FPS, MP2_Anim.Mx, MP2_Anim.My, MP2_Anim.JX,MP2_Anim.JX);
     SetWindowText(MP2_Anim.hWnd, str);
   }
-  MP2_OldTime = t.QuadPart;
-  /*. . . опросили все (kbd, mouse, joystick)*/   
-  SelectObject(MP2_Anim.hDC, GetStockObject(DC_PEN));
-  SelectObject(MP2_Anim.hDC, GetStockObject(DC_BRUSH));
-  SetDCPenColor(MP2_Anim.hDC, RGB(100,150,200));
-  SetDCBrushColor(MP2_Anim.hDC, RGB(100,150,200)); 
-  Rectangle(MP2_Anim.hDC, 0, 0, MP2_Anim.W + 1, MP2_Anim.H + 1);
-  for (i = 0; i < MP2_Anim.NumOfUnits; i++)
-    MP2_Anim.Units[i]->Response(MP2_Anim.Units[i], &MP2_Anim);
+  MP2_OldTime = t.QuadPart;  
 
-  
-  for (i = 0; i < MP2_Anim.NumOfUnits; i++)
+  for (i = 0; i < MP2_Anim.NumOfUnits; i++)  
+    MP2_Anim.Units[i]->Response(MP2_Anim.Units[i], &MP2_Anim);
+   /*** Clear frame ***/
+  /* Clear background */
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  for (i = 0; i < MP2_Anim.NumOfUnits; i++)  
   {
-    SelectObject(MP2_Anim.hDC, GetStockObject(DC_PEN));
-    SelectObject(MP2_Anim.hDC, GetStockObject(DC_BRUSH));
-    SetDCPenColor(MP2_Anim.hDC, RGB(200,150,100));
-    SetDCBrushColor(MP2_Anim.hDC, RGB(200,150,100));
-    /* можно сбросить все кисти и перья */
+    MP2_RndMatrWorld = MatrIdentity();
     MP2_Anim.Units[i]->Render(MP2_Anim.Units[i], &MP2_Anim);
   }
+
   dx += MP2_Anim.JX / 10;
   dy += MP2_Anim.JY / 10;
   MP2_RndMatrView = MatrView(VecSet(MP2_Anim.JX * 30, MP2_Anim.JY * 30, MP2_Anim.JZ * 30), VecSet(0,0,0), VecSet(0,1,0));
-  if (MP2_Anim.KeysClick[VK_SPACE])
-     MP2_AnimAddUnit(MP2_UnitCreateCube(Rnd1(), Rnd1(), Rnd1()));
+  glLoadMatrixf(&MP2_RndMatrView.A[0][0]);
+  glFinish();
 }
