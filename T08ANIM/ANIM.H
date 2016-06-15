@@ -111,6 +111,7 @@ VOID MP2_AnimAddUnit( mp2UNIT *Uni );
 VOID MP2_AnimClose( VOID );
 VOID MP2_AnimRender( VOID );
 VOID MP2_RndProj( VOID );
+VOID FlipFullScreen( HWND hWnd );
 BOOL MP2_RndPrimLoad( mp2PRIM *Pr, CHAR *FileName );
 VOID MP2_RndPrimFree( mp2PRIM *Pr );
 mp2UNIT * MP2_AnimUnitCreate( INT Size );

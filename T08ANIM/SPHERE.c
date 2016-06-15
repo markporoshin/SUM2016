@@ -29,20 +29,6 @@ VOID sphere( HDC hDC, INT xc, INT yc );
  * RETURNS:
  *   (FLT) result random number.
  */
-__inline FLT Rnd0( VOID )
-{
-  return (FLT)rand() / RAND_MAX;
-} /* End of 'Rnd0' function */
-
-/* Random number obtain in range [-1.0 .. 1.0] function.
- * ARGUMENTS: None.
- * RETURNS:
- *   (FLT) result random number.
- */
-__inline FLT Rnd1( VOID )
-{
-  return 2.0 * rand() / RAND_MAX - 1;
-} /* End of 'Rnd1' function */
 
 static VOID MP2_UnitInit( mp2SPHERE *Uni, mp2ANIM *Ani )
 {

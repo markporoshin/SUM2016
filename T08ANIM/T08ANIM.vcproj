@@ -222,6 +222,10 @@
 				Name="UNIT sumples"
 				>
 				<File
+					RelativePath=".\CONTROL.c"
+					>
+				</File>
+				<File
 					RelativePath=".\CUBE.c"
 					>
 				</File>

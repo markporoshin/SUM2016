@@ -8,37 +8,16 @@ typedef struct
   mp2PRIM p;
 }mp2CUBE;
 
-VEC CubeP[] =
-{
-  {-1, -1,  1},
-  { 1, -1,  1},
-  { 1, -1, -1},
-  {-1, -1, -1},
-  {-1,  1,  1},
-  { 1,  1,  1},
-  { 1,  1, -1},
-  {-1,  1, -1}
-};
-
-INT CubeE[][2] =
-{
-  {0, 1}, {1, 2}, {2, 3}, {3, 0},
-  {4, 5}, {5, 6}, {6, 7}, {7, 4},
-  {0, 4}, {1, 5}, {2, 6}, {3, 7}
-};
-mp2PRIM Cube =
-{
-  CubeP, sizeof(CubeP) / sizeof(CubeP[0]),
-  CubeE, sizeof(CubeE) / sizeof(CubeE[0])
-};
 
 static VOID MP2_UnitInit( mp2CUBE *Uni, mp2ANIM *Ani )
-{
+{  
+ 
   MP2_RndPrimLoad( &Uni->p, "cow.g3d" ); 
 } /* End of 'MP2_UnitInit' function */
 
 static VOID MP2_UnitRender( mp2CUBE *Uni, mp2ANIM *Ani )
 {
+  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrTranslate(Uni->Pos));
   MP2_RndPrimDraw( &Uni->p );
 }
 

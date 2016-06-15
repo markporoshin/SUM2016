@@ -123,7 +123,6 @@ VOID MP2_AnimRender( VOID )
   static FLT dx = 0, dy = 0;
   LARGE_INTEGER t;
   POINT pt;
-  srand(1);
 
   /* Mouse wheel */
   MP2_Anim.Mdz = MP2_MOUSEWHEEL;
@@ -225,9 +224,6 @@ VOID MP2_AnimRender( VOID )
     MP2_Anim.Units[i]->Render(MP2_Anim.Units[i], &MP2_Anim);
   }
 
-  dx += MP2_Anim.JX / 10;
-  dy += MP2_Anim.JY / 10;
-  MP2_RndMatrView = MatrView(VecSet(MP2_Anim.JX * 30, MP2_Anim.JY * 30, MP2_Anim.JZ * 30), VecSet(0,0,0), VecSet(0,1,0));
   glLoadMatrixf(&MP2_RndMatrView.A[0][0]);
   glFinish();
 }
