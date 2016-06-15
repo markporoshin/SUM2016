@@ -210,6 +210,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\SHADERS.c"
+					>
+				</File>
+				<File
 					RelativePath=".\UNITS.c"
 					>
 				</File>

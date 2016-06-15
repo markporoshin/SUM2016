@@ -11,7 +11,7 @@
 #pragma comment(lib, "glew32s")
 #define MP2_GET_JOYSTIC_AXIS(A)  (2.0 * (ji.dw##A##pos - jc.w##A##min) / (jc.w##A##max - jc.w##A##min - 1) - 1)
 
-
+UINT MP2_RndPrg;
 INT MP2_MOUSEWHEEL;
 mp2ANIM MP2_Anim;
 static UINT64
@@ -68,6 +68,7 @@ VOID MP2_AnimInit( HWND hWnd )
   MP2_RndMatrProj = MatrFrustum(-1, 1, -1, 1, 1, 100);
   MP2_RndMatrWorld = MatrIdentity();
   MP2_RndMatrView  = MatrMulMatr(MatrIdentity(), MatrTranslate(VecSet(-1, -1, 0)));
+  MP2_RndPrg = MP2_RndShaderLoad("shader");
 
   /* OpenGL specific initialization */
   glClearColor(0.3, 0.5, 0.7, 1);
@@ -106,6 +107,8 @@ VOID MP2_AnimClose( VOID )
     MP2_Anim.Units[i]->Close(MP2_Anim.Units[i], &MP2_Anim);
     free(MP2_Anim.Units[i]);
   }
+  /* Delete shaders */
+  MP2_RndShaderFree(MP2_RndPrg);
   /* Delete rendering context */
   wglMakeCurrent(NULL, NULL);
   wglDeleteContext(MP2_Anim.hGLRC);

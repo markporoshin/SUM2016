@@ -154,7 +154,7 @@ INT WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, CHAR *CmdLine,
   i=1, j=1;
   LoadSphere();
     
-  MP2_AnimAddUnit(MP2_UnitCreateControl());
+  MP2_AnimAddUnit(MP2_UnitCreateControl(3, 3, 3));
   /*MP2_AnimAddUnit(MP2_UnitCreateCube(i * (MP2_Anim.W / 3.0) + 100, j * (MP2_Anim.H / 4.0) + 100, 0 ));*/
   while (GetMessage(&msg, NULL, 0, 0))
   {

@@ -32,7 +32,7 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
   /*if (Ani->Keys[VK_SPACE])
     MP2_AnimAddUnit(MP2_UnitCreateBall()); */
   if (Ani->Keys['C'])
-    MP2_AnimAddUnit(MP2_UnitCreateCube(Rnd0() * 50, Rnd0() * 50, Rnd0() * 50));
+    MP2_AnimAddUnit(MP2_UnitCreateCube(Rnd0(), Rnd0(), Rnd0()));
   if (Ani->KeysClick[VK_RETURN] && Ani->Keys[VK_MENU])
     MP2_FlipFullScreen(MP2_Anim.hWnd);
   /*if (Ani->KeysClick[VK_ESCAPE])

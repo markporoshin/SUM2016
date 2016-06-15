@@ -90,9 +90,7 @@ struct tagmp2UNIT
 
 typedef struct
 {
-  mp2VERTEX *V;     /* Primitive vertex array */
-  INT NumOfV;       /* Point array size */
-  INT *I;           /* Facets index array */
+  INT VA, VBuf, IBuf;
   INT NumOfI;       /* Facets index array size */
 } mp2PRIM;
 
@@ -102,6 +100,7 @@ extern MATR MP2_RndMatrWorld/* = MatrIdentity()*/,
 extern FLT  MP2_RndProjDist,
      MP2_RndFarClip,
      MP2_RndProjSize;
+extern UINT MP2_RndPrg;
 extern INT MP2_MOUSEWHEEL;
 extern mp2ANIM MP2_Anim;
 VOID MP2_AnimInit( HWND hWnd );
@@ -112,6 +111,8 @@ VOID MP2_AnimClose( VOID );
 VOID MP2_AnimRender( VOID );
 VOID MP2_RndProj( VOID );
 VOID FlipFullScreen( HWND hWnd );
+UINT MP2_RndShaderLoad( CHAR *FileNamePrefix );
+VOID MP2_RndShaderFree( UINT Prg );
 BOOL MP2_RndPrimLoad( mp2PRIM *Pr, CHAR *FileName );
 VOID MP2_RndPrimFree( mp2PRIM *Pr );
 mp2UNIT * MP2_AnimUnitCreate( INT Size );

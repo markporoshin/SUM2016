@@ -31,7 +31,7 @@ VOID MP2_RndProj( VOID )
 
 VOID MP2_RndPrimDraw( mp2PRIM *Pr )
 {
-  INT i;
+  INT loc;
   MATR M;
 
   /* Build transform matrix */
@@ -39,29 +39,37 @@ VOID MP2_RndPrimDraw( mp2PRIM *Pr )
     MatrMulMatr(MP2_RndMatrView, MP2_RndMatrProj));
   glLoadMatrixf(M.A[0]);
 
-  /* Draw all lines */
-  glBegin(GL_TRIANGLES);
-  for (i = 0; i < Pr->NumOfI; i++)
-  {
-    glColor3fv(&Pr->V[Pr->I[i]].C.X);
-    glVertex3fv(&Pr->V[Pr->I[i]].P.X);
-  }
-  glEnd();
+  glUseProgram(MP2_RndPrg);
+
+  /* Setup global variables */
+  if ((loc = glGetUniformLocation(MP2_RndPrg, "MatrWorld")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, MP2_RndMatrWorld.A[0]);
+  if ((loc = glGetUniformLocation(MP2_RndPrg, "MatrView")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, MP2_RndMatrView.A[0]);
+  if ((loc = glGetUniformLocation(MP2_RndPrg, "MatrProj")) != -1)
+    glUniformMatrix4fv(loc, 1, FALSE, MP2_RndMatrProj.A[0]);
+  if ((loc = glGetUniformLocation(MP2_RndPrg, "Time")) != -1)
+    glUniform1f(loc, MP2_Anim.Time);
+
+
+  /* Activete primitive vertex array */
+  glBindVertexArray(Pr->VA);
+  /* Activete primitive index buffer */
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+  /* Draw primitive */
+  glDrawElements(GL_TRIANGLES, Pr->NumOfI, GL_UNSIGNED_INT, NULL);
+  glUseProgram(0);
 } /* End of 'VG4_RndPrimDraw' function */
 
 
-/* Primitive free function.
- * ARGUMENTS:
- *   - primtive to free:
- *       vg4PRIM *Pr;
- * RETURNS: None.
- */
 VOID MP2_RndPrimFree( mp2PRIM *Pr )
 {
-  if (Pr->V != NULL)
-    free(Pr->V);
-  if (Pr->I != NULL)
-    free(Pr->I);
+  glBindVertexArray(Pr->VA);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &Pr->VBuf);
+  glBindVertexArray(0);
+  glDeleteVertexArrays(1, &Pr->VA);
+  glDeleteBuffers(1, &Pr->IBuf);
   memset(Pr, 0, sizeof(mp2PRIM));
 } /* End of 'VG4_RndPrimFree' function */
 
@@ -84,10 +92,12 @@ BOOL MP2_RndPrimLoad( mp2PRIM *Pr, CHAR *FileName )
   DWORD Sign;
   INT NumOfPrimitives;
   CHAR MtlFile[300];
-  INT NumOfP;
+  INT NumOfV;
   INT NumOfI;
   CHAR Mtl[300];
   INT p;
+  mp2VERTEX *V;
+  INT *I;
 
   memset(Pr, 0, sizeof(mp2PRIM));
 
@@ -100,10 +110,10 @@ BOOL MP2_RndPrimLoad( mp2PRIM *Pr, CHAR *FileName )
    *   4b NumOfPrimitives       INT NumOfPrimitives;
    *   300b material file name: CHAR MtlFile[300];
    *   repeated NumOfPrimitives times:
-   *     4b INT NumOfP; - vertex count
+   *     4b INT NumOfV; - vertex count
    *     4b INT NumOfI; - index (triangles * 3) count
    *     300b material name: CHAR Mtl[300];
-   *     repeat NumOfP times - vertices:
+   *     repeat NumOfV times - vertices:
    *         !!! float point -> FLT
    *       typedef struct
    *       {
@@ -126,38 +136,74 @@ BOOL MP2_RndPrimLoad( mp2PRIM *Pr, CHAR *FileName )
   for (p = 0; p < NumOfPrimitives; p++)
   {
     /* Read primitive info */
-    fread(&NumOfP, 4, 1, F);
+    fread(&NumOfV, 4, 1, F);
     fread(&NumOfI, 4, 1, F);
     fread(Mtl, 1, 300, F);
 
     /* Allocate memory for primitive */
-    if ((Pr->V = malloc(sizeof(mp2VERTEX) * NumOfP)) == NULL)
+    if ((V = malloc(sizeof(mp2VERTEX) * NumOfV)) == NULL)
     {
       fclose(F);
       return FALSE;
     }
-    if ((Pr->I = malloc(sizeof(INT) * NumOfI)) == NULL)
+    if ((I = malloc(sizeof(INT) * NumOfI)) == NULL)
     {
-      free(Pr->V);
-      Pr->V = NULL;
+      free(V);
+      V = NULL;
       fclose(F);
       return FALSE;
     }
-    Pr->NumOfV = NumOfP;
     Pr->NumOfI = NumOfI;
-    fread(Pr->V, sizeof(mp2VERTEX), NumOfP, F);
-    fread(Pr->I, sizeof(INT), NumOfI, F);
-    if (Pr->NumOfV > 0)
-    {
-      INT i;
+    fread(V, sizeof(mp2VERTEX), NumOfV, F);
+    fread(I, sizeof(INT), NumOfI, F);
 
-      for (i = 0; i < Pr->NumOfV; i++)
-        Pr->V[i].C = Vec4Set(Pr->V[i].N.X / 2 + 0.5,
-                             Pr->V[i].N.Y / 2 + 0.5,
-                             Pr->V[i].N.Z / 2 + 0.5, 1); /* Vec4Set(Rnd0(), Rnd0(), Rnd0(), 1); */
-    }
+    /* Create OpenGL buffers */
+    glGenVertexArrays(1, &Pr->VA);
+    glGenBuffers(1, &Pr->VBuf);
+    glGenBuffers(1, &Pr->IBuf);
+
+    /* Activate vertex array */
+    glBindVertexArray(Pr->VA);
+    /* Activate vertex buffer */
+    glBindBuffer(GL_ARRAY_BUFFER, Pr->VBuf);
+    /* Store vertex data */
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mp2VERTEX) * NumOfV, V, GL_STATIC_DRAW);
+
+    /* Setup data order */
+    /*                    layout,
+     *                      components count,
+     *                          type
+     *                                    should be normalize,
+     *                                           vertex structure size in bytes (stride),
+     *                                               offset in bytes to field start */
+    glVertexAttribPointer(0, 3, GL_FLOAT, FALSE, sizeof(mp2VERTEX),
+                          (VOID *)0); /* position */
+    glVertexAttribPointer(1, 2, GL_FLOAT, FALSE, sizeof(mp2VERTEX),
+                          (VOID *)sizeof(VEC)); /* texture coordinates */
+    glVertexAttribPointer(2, 3, GL_FLOAT, FALSE, sizeof(mp2VERTEX),
+                          (VOID *)(sizeof(VEC) + sizeof(VEC2))); /* normal */
+    glVertexAttribPointer(3, 4, GL_FLOAT, FALSE, sizeof(mp2VERTEX),
+                          (VOID *)(sizeof(VEC) * 2 + sizeof(VEC2))); /* color */
+
+    /* Enable used attributes */
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+
+    /* Indices */
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Pr->IBuf);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(INT) * NumOfI, I, GL_STATIC_DRAW);
+
+    /* Disable vertex array */
+    glBindVertexArray(0);
+
+    free(V);
+    free(I);
     break;
   }
   fclose(F);
   return TRUE;
-} /* End of 'VG4_RndPrimLoad' function */
+} /* End of 'MP2_RndPrimLoad' function */
+
+/* END OF 'LOADPRIM.C' FILE */
