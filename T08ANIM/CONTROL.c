@@ -1,6 +1,8 @@
 
 #include "ANIM.H"
 
+VEC View = {0, 0, 0};
+
 VOID MP2_RndPrimDraw( mp2PRIM *Pr );
 typedef struct
 {
@@ -31,7 +33,9 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
   /*if (Ani->Keys[VK_SPACE])
     MP2_AnimAddUnit(MP2_UnitCreateBall()); */
   if (Ani->KeysClick['C'])
-    MP2_AnimAddUnit(MP2_UnitCreateCube(Rnd1() * 4, Rnd1() * 4, Rnd1() * 4));
+    MP2_AnimAddUnit(MP2_UnitCreateCube(/*Rnd1() * 4, Rnd1() * 4, Rnd1() * 4*/0, 0, 0));
+  if (Ani->KeysClick['V'])
+    MP2_AnimAddUnit(MP2_UnitCreateSTATICMODEL(/*Rnd1() * 4, Rnd1() * 4, Rnd1() * 4*/0, 0, 0));
   if (Ani->KeysClick[VK_RETURN] && Ani->Keys[VK_MENU])
     MP2_FlipFullScreen(MP2_Anim.hWnd);
   /*if (Ani->KeysClick[VK_ESCAPE])
@@ -49,14 +53,15 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
     Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(10 * Ani->Mdx * Ani->GlobalDeltaTime));
     Uni->Pos = PointTransform(Uni->Pos, MatrRotateX(10 * Ani->Mdy * Ani->GlobalDeltaTime));
   }
-
+  View.X -= Ani->JZ / 10;
+  View.Z += Ani->JR / 10;
   Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(10 * Ani->Keys[VK_RIGHT] * Ani->GlobalDeltaTime));
   Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(-10 * Ani->Keys[VK_LEFT] * Ani->GlobalDeltaTime));
 
   r = VecLen(Uni->Pos);
   Uni->Pos = VecMulNum(Uni->Pos, (r + (-Ani->Mdz) * Ani->DeltaTime * 1.0) / r);
   
-  MP2_RndMatrView = MatrView(Uni->Pos, VecSet(4, 0, 0), VecSet(0, 1, 0));
+  MP2_RndMatrView = MatrView(VecAddVec(Uni->Pos, View), View, VecSet(0, 1, 0));
 }
 
 mp2UNIT * MP2_UnitCreateControl( FLT x, FLT y, FLT z )

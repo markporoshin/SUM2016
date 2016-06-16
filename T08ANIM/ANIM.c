@@ -156,6 +156,8 @@ VOID MP2_AnimRender( VOID )
   }
   memcpy(MP2_Anim.OldKeys, MP2_Anim.Keys, 256);
 
+
+
   /* joystick */
   if (joyGetNumDevs() > 0)
   {
@@ -225,12 +227,14 @@ VOID MP2_AnimRender( VOID )
    /*** Clear frame ***/
   /* Clear background */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  MP2_RndMatrWorld = MatrIdentity();
+
   for (i = 0; i < MP2_Anim.NumOfUnits; i++)  
   {
     MP2_RndMatrWorld = MatrIdentity();
     MP2_Anim.Units[i]->Render(MP2_Anim.Units[i], &MP2_Anim);
   }
-
+  
   glLoadMatrixf(&MP2_RndMatrView.A[0][0]);
   glFinish();
 }

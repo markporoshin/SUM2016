@@ -234,7 +234,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\see.c"
+					>
+				</File>
+				<File
 					RelativePath=".\SPHERE.c"
+					>
+				</File>
+				<File
+					RelativePath=".\static model.c"
 					>
 				</File>
 			</Filter>

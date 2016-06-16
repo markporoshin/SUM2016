@@ -10,9 +10,9 @@ MATR MP2_RndMatrWorld/* = MatrIdentity()*/,
      MP2_RndMatrView /* = MatrMulMatr(MatrIdentity, MatrTranslate(VecSet(-1, -1, 0)))*/,
      MP2_RndMatrProj;
 
-FLT  MP2_RndProjDist  =   0.1,
-     MP2_RndFarClip   =  100,
-     MP2_RndProjSize  =   0.1;
+FLT  MP2_RndProjDist  =   1 ,
+     MP2_RndFarClip   =  5000,
+     MP2_RndProjSize  =   1;
 
 mp2MTL MP2_RndMaterials[MP2_MAX_MATERIALS];
 INT MP2_RndNumOfMaterials;
@@ -172,7 +172,7 @@ BOOL MP2_RndObjLoad( mp2OBJ *Obj, CHAR *FileName )
     fread(&NumOfV, 4, 1, F);
     fread(&NumOfI, 4, 1, F);
     fread(Mtl, 1, 300, F);
-
+    Obj->Prims[p].MtlNo = MP2_RndFindMaterial(Mtl);
     /* Allocate memory for primitive */
     if ((V = malloc(sizeof(mp2VERTEX) * NumOfV + sizeof(INT) * NumOfI)) == NULL)
     {
@@ -236,7 +236,7 @@ BOOL MP2_RndObjLoad( mp2OBJ *Obj, CHAR *FileName )
 
     /* Disable vertex array */
     glBindVertexArray(0);
-    Obj->Prims[p].Mtl.TexNo = MP2_RndFindMaterial(Mtl);
+    //Obj->Prims[p].Mtl.TexNo = MP2_RndFindMaterial(Mtl);
     free(V);
   }
   fclose(F);

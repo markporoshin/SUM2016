@@ -125,6 +125,7 @@ extern FLT  MP2_RndProjDist,
      MP2_RndFarClip,
      MP2_RndProjSize;
 
+extern VEC View;
 extern mp2MTL MP2_RndMaterials[MP2_MAX_MATERIALS];
 extern INT MP2_RndNumOfMaterials; 
 extern UINT MP2_RndPrg;

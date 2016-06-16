@@ -12,12 +12,10 @@ typedef struct
 static VOID MP2_UnitInit( mp2MODEL *Uni, mp2ANIM *Ani )
 {  
  
-  MP2_RndObjLoad( &Uni->Obj, "Cruiser.g3d" );
 } /* End of 'MP2_UnitInit' function */
 
 static VOID MP2_UnitRender( mp2MODEL *Uni, mp2ANIM *Ani )
 {
-  MP2_RndMatrWorld = MatrMulMatr(MatrMulMatr(MP2_RndMatrWorld, MatrScale(VecSet(0.0030, 0.0030, 0.0030))), MatrTranslate(View));
   MP2_RndObjDraw( &Uni->Obj );
 }
 
@@ -32,7 +30,7 @@ static VOID MP2_UnitResponse( mp2MODEL *Uni, mp2ANIM *Ani )
   
 }
 
-mp2UNIT * MP2_UnitCreateCube( FLT x, FLT y, FLT z )
+mp2UNIT * MP2_UnitCreateSee( FLT x, FLT y, FLT z )
 {
   mp2MODEL *Uni;
 
@@ -46,9 +44,3 @@ mp2UNIT * MP2_UnitCreateCube( FLT x, FLT y, FLT z )
   Uni->Close = (VOID *)MP2_UnitClose;
   return (mp2UNIT *)Uni;
 } /* End of 'MP2_UnitCreateBall' function */
-
-
-
-
-
-
