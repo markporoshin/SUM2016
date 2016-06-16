@@ -11,6 +11,7 @@
 #pragma comment(lib, "glew32s")
 #define MP2_GET_JOYSTIC_AXIS(A)  (2.0 * (ji.dw##A##pos - jc.w##A##min) / (jc.w##A##max - jc.w##A##min - 1) - 1)
 
+
 UINT MP2_RndPrg;
 INT MP2_MOUSEWHEEL;
 mp2ANIM MP2_Anim;
@@ -73,6 +74,8 @@ VOID MP2_AnimInit( HWND hWnd )
   /* OpenGL specific initialization */
   glClearColor(0.3, 0.5, 0.7, 1);
   glEnable(GL_DEPTH_TEST );
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   /* glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); */
 }
 

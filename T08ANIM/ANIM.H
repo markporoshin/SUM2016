@@ -7,7 +7,7 @@
 
 #include "IMAGE.h"
 #define MP2_MAX_UNITS 100
-
+#define MP2_MAX_MATERIALS 10000
   /* Timer data */
 
 
@@ -87,12 +87,36 @@ struct tagmp2UNIT
   VOID (* Render)( mp2UNIT *Uni, mp2ANIM *Ani );
 };
 
+typedef struct
+{
+  CHAR Name[300]; /* Material name */
+  VEC Ka, Kd, Ks; /* Illumination coefficients */
+  FLT Ph, Trans;  /* Shininess and Phong, transparency */
+  INT TexW, TexH; /* Textiure image size */
+  INT TexNo;      /* For load: bytes per pixel, in use: OpenGL texture no */
+} mp2MTL;
 
 typedef struct
 {
-  INT VA, VBuf, IBuf;
+  /* OpenGL buffers */
+  INT
+    VA,   /* Vertex array */
+    VBuf, /* Vertex buffer */
+    IBuf; /* Index buffer */
   INT NumOfI;       /* Facets index array size */
+  MATR M; /* Primitive transformation matrix */
+  INT MtlNo; /* Material number */
+  mp2MTL Mtl;
 } mp2PRIM;
+
+typedef struct
+{
+  mp2PRIM *Prims;
+  INT NumOfPrims;
+} mp2OBJ;
+
+
+
 
 extern MATR MP2_RndMatrWorld/* = MatrIdentity()*/,
             MP2_RndMatrView /* = MatrMulMatr(MatrIdentity, MatrTranslate(VecSet(-1, -1, 0)))*/,
@@ -100,6 +124,9 @@ extern MATR MP2_RndMatrWorld/* = MatrIdentity()*/,
 extern FLT  MP2_RndProjDist,
      MP2_RndFarClip,
      MP2_RndProjSize;
+
+extern mp2MTL MP2_RndMaterials[MP2_MAX_MATERIALS];
+extern INT MP2_RndNumOfMaterials; 
 extern UINT MP2_RndPrg;
 extern INT MP2_MOUSEWHEEL;
 extern mp2ANIM MP2_Anim;
@@ -111,8 +138,11 @@ VOID MP2_AnimClose( VOID );
 VOID MP2_AnimRender( VOID );
 VOID MP2_RndProj( VOID );
 VOID FlipFullScreen( HWND hWnd );
+INT MP2_RndFindMaterial( CHAR *Name );
+VOID MP2_RndLoadMaterials( CHAR *FileName );
 UINT MP2_RndShaderLoad( CHAR *FileNamePrefix );
 VOID MP2_RndShaderFree( UINT Prg );
-BOOL MP2_RndPrimLoad( mp2PRIM *Pr, CHAR *FileName );
-VOID MP2_RndPrimFree( mp2PRIM *Pr );
 mp2UNIT * MP2_AnimUnitCreate( INT Size );
+VOID MP2_RndObjFree( mp2OBJ *Obj );
+BOOL MP2_RndObjLoad( mp2OBJ *Obj, CHAR *FileName );
+VOID MP2_RndObjDraw( mp2OBJ *Obj );

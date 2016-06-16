@@ -22,7 +22,6 @@ static VOID MP2_UnitRender( mp2CONTROL *Uni, mp2ANIM *Ani )
 static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
 {
   DBL r;
-
   if (Ani->Keys['T'])
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   if (Ani->Keys['Y'])
@@ -31,8 +30,8 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
     glPolygonMode(GL_BACK, GL_LINE);
   /*if (Ani->Keys[VK_SPACE])
     MP2_AnimAddUnit(MP2_UnitCreateBall()); */
-  if (Ani->Keys['C'])
-    MP2_AnimAddUnit(MP2_UnitCreateCube(Rnd0(), Rnd0(), Rnd0()));
+  if (Ani->KeysClick['C'])
+    MP2_AnimAddUnit(MP2_UnitCreateCube(Rnd1() * 4, Rnd1() * 4, Rnd1() * 4));
   if (Ani->KeysClick[VK_RETURN] && Ani->Keys[VK_MENU])
     MP2_FlipFullScreen(MP2_Anim.hWnd);
   /*if (Ani->KeysClick[VK_ESCAPE])
@@ -43,6 +42,7 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
   /* Uni->Pos.Y += Ani->JY * Ani->GlobalDeltaTime; */
   Uni->Pos = PointTransform(Uni->Pos, MatrRotateX(10 * Ani->JY * Ani->GlobalDeltaTime));
   Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(10 * Ani->JX * Ani->GlobalDeltaTime));
+   
 
   if (Ani->Keys[VK_LBUTTON])
   {
@@ -55,8 +55,8 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
 
   r = VecLen(Uni->Pos);
   Uni->Pos = VecMulNum(Uni->Pos, (r + (-Ani->Mdz) * Ani->DeltaTime * 1.0) / r);
-
-  MP2_RndMatrView = MatrView(Uni->Pos, VecSet(0, 0, 0), VecSet(0, 1, 0));
+  
+  MP2_RndMatrView = MatrView(Uni->Pos, VecSet(4, 0, 0), VecSet(0, 1, 0));
 }
 
 mp2UNIT * MP2_UnitCreateControl( FLT x, FLT y, FLT z )

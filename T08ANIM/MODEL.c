@@ -5,25 +5,25 @@ typedef struct
 {
   mp2UNIT;
   VEC Pos;
-  mp2PRIM p;
+  mp2OBJ Obj;
 }mp2MODEL;
 
 
 static VOID MP2_UnitInit( mp2MODEL *Uni, mp2ANIM *Ani )
 {  
  
-  MP2_RndPrimLoad( &Uni->p, "cow.g3d" ); 
+  MP2_RndObjLoad( &Uni->Obj, "Cruiser.g3d" );
 } /* End of 'MP2_UnitInit' function */
 
 static VOID MP2_UnitRender( mp2MODEL *Uni, mp2ANIM *Ani )
 {
-  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrTranslate(Uni->Pos));
-  MP2_RndPrimDraw( &Uni->p );
+  MP2_RndMatrWorld = MatrMulMatr(MatrMulMatr(MP2_RndMatrWorld, MatrScale(VecSet(0.003, 0.003, 0.003))), MatrTranslate(Uni->Pos));
+  MP2_RndObjDraw( &Uni->Obj );
 }
 
 static VOID MP2_UnitClose( mp2MODEL *Uni, mp2ANIM *Ani )
 {
-  MP2_RndPrimFree( &Uni->p );
+  MP2_RndObjFree( &Uni->Obj );
 }
 
 
@@ -48,12 +48,7 @@ mp2UNIT * MP2_UnitCreateCube( FLT x, FLT y, FLT z )
 } /* End of 'MP2_UnitCreateBall' function */
 
 
-/* Primitive draw function.
- * ARGUMENTS:
- *   - primtive to draw:
- *       mp2PRIM *Pr;
- * RETURNS: None.
- */
+
 
 
 
