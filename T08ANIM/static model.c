@@ -12,12 +12,12 @@ typedef struct
 static VOID MP2_UnitInit( mp2MODEL *Uni, mp2ANIM *Ani )
 {  
  
-  MP2_RndObjLoad( &Uni->Obj, "Cruiser.g3d" );
+  MP2_RndObjLoad( &Uni->Obj, "lighthouse.g3d" );
 } /* End of 'MP2_UnitInit' function */
 
 static VOID MP2_UnitRender( mp2MODEL *Uni, mp2ANIM *Ani )
 {
-  glBegin(GL_LINES);
+  /*glBegin(GL_LINES);
     glColor3d(1, 0, 0);
     glVertex3d(0, 0, 0);
     glVertex4d(1, 0, 0, 0);
@@ -27,8 +27,8 @@ static VOID MP2_UnitRender( mp2MODEL *Uni, mp2ANIM *Ani )
     glColor3d(0, 0, 1);
     glVertex3d(0, 0, 0);
     glVertex4d(0, 0, 1, 0);
-  glEnd();
-  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrScale(VecSet(0.003, 0.003, 0.003)));
+  glEnd();*/
+  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrScale(VecSet(5.0030, 5.0030, 5.0030)));
   MP2_RndObjDraw( &Uni->Obj );
 }
 

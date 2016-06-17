@@ -24,6 +24,8 @@ static VOID MP2_UnitRender( mp2CONTROL *Uni, mp2ANIM *Ani )
 static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
 {
   DBL r;
+  VEC Dir = VecNormalize(VecSubVec(View, Uni->Pos)),
+      Right = VecNormalize(VecCrossVec(Dir, VecSet(0, 1, 0)));
   if (Ani->Keys['T'])
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   if (Ani->Keys['Y'])
@@ -44,7 +46,7 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
     Ani->IsPause = !Ani->IsPause;
 
   /* Uni->Pos.Y += Ani->JY * Ani->GlobalDeltaTime; */
-  Uni->Pos = PointTransform(Uni->Pos, MatrRotateX(10 * Ani->JY * Ani->GlobalDeltaTime));
+  Uni->Pos = PointTransform(Uni->Pos, MatrRotate((50 * Ani->JY * Ani->GlobalDeltaTime), Right));
   Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(10 * Ani->JX * Ani->GlobalDeltaTime));
    
 
@@ -53,7 +55,7 @@ static VOID MP2_UnitResponse( mp2CONTROL *Uni, mp2ANIM *Ani )
     Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(10 * Ani->Mdx * Ani->GlobalDeltaTime));
     Uni->Pos = PointTransform(Uni->Pos, MatrRotateX(10 * Ani->Mdy * Ani->GlobalDeltaTime));
   }
-  View.X -= Ani->JZ / 10;
+  View.X += Ani->JZ / 10;
   View.Z += Ani->JR / 10;
   Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(10 * Ani->Keys[VK_RIGHT] * Ani->GlobalDeltaTime));
   Uni->Pos = PointTransform(Uni->Pos, MatrRotateY(-10 * Ani->Keys[VK_LEFT] * Ani->GlobalDeltaTime));

@@ -6,6 +6,7 @@ typedef struct
   mp2UNIT;
   VEC Pos;
   mp2OBJ Obj;
+  INT grid[100][100];
 }mp2MODEL;
 
 

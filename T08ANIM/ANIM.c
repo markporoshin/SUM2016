@@ -72,7 +72,7 @@ VOID MP2_AnimInit( HWND hWnd )
   MP2_RndPrg = MP2_RndShaderLoad("shader");
 
   /* OpenGL specific initialization */
-  glClearColor(0.3, 0.5, 0.7, 1);
+  glClearColor(0.7, 0.5, 0.3, 1);
   glEnable(GL_DEPTH_TEST );
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -217,7 +217,7 @@ VOID MP2_AnimRender( VOID )
                                          (FLT)(t.QuadPart - MP2_OldTimeFPS);
     MP2_OldTimeFPS = t.QuadPart;
     MP2_FrameCounter = 0;
-    sprintf(str, "Anim FPS: %.5f Mouse Coord:  %i, %i JoyStick Coord: %f %f", MP2_Anim.FPS, MP2_Anim.Mx, MP2_Anim.My, MP2_Anim.JX,MP2_Anim.JX);
+    sprintf(str, "Anim FPS: %.5f Mouse Coord:  %i, %i JoyStick Coord Z:%f R:%f", MP2_Anim.FPS, MP2_Anim.Mx, MP2_Anim.My, MP2_Anim.JZ,MP2_Anim.JR);
     SetWindowText(MP2_Anim.hWnd, str);
   }
   MP2_OldTime = t.QuadPart;  

@@ -12,12 +12,28 @@ typedef struct
 static VOID MP2_UnitInit( mp2MODEL *Uni, mp2ANIM *Ani )
 {  
  
-  MP2_RndObjLoad( &Uni->Obj, "Cruiser.g3d" );
+  MP2_RndObjLoad( &Uni->Obj, "boat_fishing_01.g3d" );
 } /* End of 'MP2_UnitInit' function */
 
 static VOID MP2_UnitRender( mp2MODEL *Uni, mp2ANIM *Ani )
-{
-  MP2_RndMatrWorld = MatrMulMatr(MatrMulMatr(MP2_RndMatrWorld, MatrScale(VecSet(0.0030, 0.0030, 0.0030))), MatrTranslate(View));
+{ 
+  static DBL angle;
+  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrTranslate(VecSet(0, 100, 0)));
+  if (Ani->JZ != 0 && Ani->JR != 0)
+  {
+    angle = asin(Ani->JR / sqrt(Ani->JR * Ani->JR + Ani->JZ * Ani->JZ));
+    if (Ani->JZ < 0)
+      ;/*its okey*/
+    if (Ani->JZ > 0)
+      angle = 3 * PI - angle;
+    if (Ani->JZ == 1)
+      angle == PI;
+  }
+  //MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrRotateY(90 ));
+  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrRotateY(angle + 270 + 90));
+  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrScale(VecSet(0.030, 0.030, 0.030)));
+  MP2_RndMatrWorld = MatrMulMatr(MP2_RndMatrWorld, MatrTranslate(View));
+  
   MP2_RndObjDraw( &Uni->Obj );
 }
 
