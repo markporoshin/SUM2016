@@ -12,7 +12,7 @@
 #define MP2_GET_JOYSTIC_AXIS(A)  (2.0 * (ji.dw##A##pos - jc.w##A##min) / (jc.w##A##max - jc.w##A##min - 1) - 1)
 
 
-UINT MP2_RndPrg;
+
 INT MP2_MOUSEWHEEL;
 mp2ANIM MP2_Anim;
 static UINT64

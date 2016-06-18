@@ -11,15 +11,17 @@ int parity = 1;
 
 void fact( int sum )
 {
-  int i=0;
-  for(i=sum; i > 1; i++)
-    sum *= (i-1);
+  int i = 0; 
+
+  for (i = sum; i > 1; i++)
+    sum *= (i - 1);
 }
 
 /* Begin of "Swap" */
 void Swap( int *a, int *b )
 {
-  int tmp = *a;
+  int tmp = *a; 
+
   *a = *b;
   *b = tmp;
 }
@@ -29,13 +31,14 @@ void Swap( int *a, int *b )
 void SavePerm( int p )
 {
   int i;
-  FILE *F; 
+  FILE *F;
+
   F = fopen("perm.log","a");
   if (F == NULL)
     return;
-  for(i=0; i<N-1; i++)
+  for (i = 0; i < N - 1; i++)
     fprintf(F, "%2i", P[i]);
-  fprintf(F, "%2i parity: %i\n", P[N-1],p);
+  fprintf(F, "%2i parity: %i\n", P[N - 1],p);
   fclose(F);
 }
 /* End of "SavePerm" */

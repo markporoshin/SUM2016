@@ -125,8 +125,8 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
       y=rand() % (h+1); 
       arrow(hWnd,hMemDC, x, y, pt, 50);
     }   */
-    for(i=50; i<w; i += 100)
-      for(j=50; j<h; j += 100)
+    for(i=50; i<w; i += 50)
+      for(j=50; j<h; j += 50)
         arrow(hWnd,hMemDC, i, j, pt, 25);
     InvalidateRect(hWnd, NULL, FALSE);
     return 0;

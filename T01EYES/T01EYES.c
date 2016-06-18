@@ -58,6 +58,7 @@ LRESULT CALLBACK MyWindowFunc( HWND hWnd, UINT Msg,WPARAM wParam, LPARAM lParam)
   INT i=0, x, y;
   static HBITMAP hBm;
   static HDC hMemDC;
+
   static INT h=500, w=700, flag=1;
   HDC hDC;
   POINT pt;

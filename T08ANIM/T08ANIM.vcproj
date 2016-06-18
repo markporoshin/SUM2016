@@ -206,10 +206,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\RENDER.c"
-					>
-				</File>
-				<File
 					RelativePath=".\SHADERS.c"
 					>
 				</File>
@@ -221,6 +217,26 @@
 					RelativePath=".\UNITS.H"
 					>
 				</File>
+				<Filter
+					Name="RENDER"
+					>
+					<File
+						RelativePath=".\MTL.c"
+						>
+					</File>
+					<File
+						RelativePath=".\OBJ.c"
+						>
+					</File>
+					<File
+						RelativePath=".\PRIM.c"
+						>
+					</File>
+					<File
+						RelativePath=".\RENDER.c"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="UNIT sumples"

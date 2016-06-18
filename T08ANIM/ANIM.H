@@ -16,12 +16,12 @@ typedef struct tagmp2UNIT mp2UNIT;
 typedef struct
 {
   CREATESTRUCT *cs;
-  HWND hWnd; //- окно
-  HDC hDC;   //- контекст в памяти
-  INT W, H;  //- размер окна
+  HWND hWnd; 
+  HDC hDC;   
+  INT W, H;  
   HGLRC hGLRC;                   /* Rendering context */
-  mp2UNIT *Units[MP2_MAX_UNITS]; //- массив объектов анимации
-  INT NumOfUnits; //- текущее количество объектов анимации
+  mp2UNIT *Units[MP2_MAX_UNITS]; 
+  INT NumOfUnits; 
   /*** Timer ***/
   FLT GlobalTime, GlobalDeltaTime, /* Global time and interframe interval */
       Time, DeltaTime,             /* Time with pause and interframe interval */
@@ -106,13 +106,14 @@ typedef struct
   INT NumOfI;       /* Facets index array size */
   MATR M; /* Primitive transformation matrix */
   INT MtlNo; /* Material number */
-  mp2MTL Mtl;
+  INT Id;
 } mp2PRIM;
 
 typedef struct
 {
   mp2PRIM *Prims;
   INT NumOfPrims;
+  MATR M;
 } mp2OBJ;
 
 
@@ -144,6 +145,13 @@ VOID MP2_RndLoadMaterials( CHAR *FileName );
 UINT MP2_RndShaderLoad( CHAR *FileNamePrefix );
 VOID MP2_RndShaderFree( UINT Prg );
 mp2UNIT * MP2_AnimUnitCreate( INT Size );
-VOID MP2_RndObjFree( mp2OBJ *Obj );
-BOOL MP2_RndObjLoad( mp2OBJ *Obj, CHAR *FileName );
+
+VOID ObjCreate( mp2OBJ *Obj );
+BOOL ObjAddPrim( mp2OBJ *OBJ, mp2PRIM *Pr );
+//BOOL MP2_RndObjLoad( mp2OBJ *Obj, CHAR *FileName );
 VOID MP2_RndObjDraw( mp2OBJ *Obj );
+VOID MP2_RndObjFree( mp2OBJ *Obj );
+
+BOOL PrimCreate( mp2PRIM *Pr, mp2VERTEX *V, INT NumOfV, INT *I, INT NumOfI );
+VOID PrimDraw( mp2PRIM *Pr );
+VOID PrimFree( mp2PRIM *Pr );

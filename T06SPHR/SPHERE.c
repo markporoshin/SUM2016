@@ -230,10 +230,10 @@ VOID sphere( HDC hDC, INT xc, INT yc )
       SelectObject(hDC, GetStockObject(DC_BRUSH));
       SetDCPenColor(hDC, c);
       SetDCBrushColor(hDC, c);
-      //DrawQuad(hDC, p0, p1, p2, p3);
+      DrawQuad(hDC, p0, p1, p2, p3);
     }
   } 
-  for (i = 0; i < N; i++)
+  /*for (i = 0; i < N; i++)
   { 
     MoveToEx(hDC, xc + V[i][0].X, yc - V[i][0].Z, NULL);
     for (j = 1; j < M; j++)
@@ -249,5 +249,5 @@ VOID sphere( HDC hDC, INT xc, INT yc )
     {       
       LineTo(hDC, xc + V[i][j].X, yc - V[i][j].Z);
     }
-  }
+  } */
 }

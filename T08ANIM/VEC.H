@@ -72,6 +72,13 @@ __inline VEC VecSet( FLT X, FLT Y, FLT Z )
 
   return r;
 }
+
+__inline VEC2 Vec2Set( FLT X, FLT Y )
+{
+  VEC2 r = {X, Y};
+
+  return r;
+}
 /* end of function "VecSet"*/
 
 __inline VEC4 Vec4Set( FLT a, FLT b, FLT c, FLT d )
